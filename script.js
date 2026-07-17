@@ -70,3 +70,119 @@ function timTenQue(ds){
     return "Đang xây dựng dữ liệu 64 quẻ";
 
 }
+//==============================
+// BÁT QUÁI
+//==============================
+
+const BATQUAI = {
+
+"111":{
+ten:"Càn",
+so:1
+},
+
+"110":{
+ten:"Đoài",
+so:2
+},
+
+"101":{
+ten:"Ly",
+so:3
+},
+
+"100":{
+ten:"Chấn",
+so:4
+},
+
+"011":{
+ten:"Tốn",
+so:5
+},
+
+"010":{
+ten:"Khảm",
+so:6
+},
+
+"001":{
+ten:"Cấn",
+so:7
+},
+
+"000":{
+ten:"Khôn",
+so:8
+}
+
+};
+
+//==============================
+// 64 QUẺ
+//==============================
+
+const HEXAGRAM = {
+
+"Càn-Càn":"Thuần Càn",
+"Khôn-Khôn":"Thuần Khôn",
+"Khảm-Khảm":"Thuần Khảm",
+"Ly-Ly":"Thuần Ly",
+"Chấn-Chấn":"Thuần Chấn",
+"Tốn-Tốn":"Thuần Tốn",
+"Cấn-Cấn":"Thuần Cấn",
+"Đoài-Đoài":"Thuần Đoài"
+
+};
+
+//==============================
+
+function timTenQue(ds){
+
+let binary=[];
+
+for(let i=0;i<6;i++){
+
+if(ds[i]==7||ds[i]==9){
+
+binary.push(1);
+
+}else{
+
+binary.push(0);
+
+}
+
+}
+
+let ha=
+
+binary[0]+""+
+binary[1]+""+
+binary[2];
+
+let thuong=
+
+binary[3]+""+
+binary[4]+""+
+binary[5];
+
+let haName=BATQUAI[ha].ten;
+
+let thuongName=BATQUAI[thuong].ten;
+
+let key=
+
+thuongName+
+"-"+
+haName;
+
+if(HEXAGRAM[key]){
+
+return HEXAGRAM[key];
+
+}
+
+return key;
+
+}
