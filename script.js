@@ -321,3 +321,253 @@ Object.assign(HEXAGRAM,{
 "Ly-Khôn":"Hỏa Địa Tấn"
 
 });
+//========================================
+// 64 QUẺ KINH DỊCH (PHẦN 2)
+//========================================
+
+Object.assign(HEXAGRAM,{
+
+"Chấn-Càn":"Lôi Thiên Đại Tráng",
+"Chấn-Đoài":"Lôi Trạch Quy Muội",
+"Chấn-Ly":"Lôi Hỏa Phong",
+"Chấn-Tốn":"Lôi Phong Hằng",
+"Chấn-Khảm":"Lôi Thủy Giải",
+"Chấn-Cấn":"Lôi Sơn Tiểu Quá",
+"Chấn-Khôn":"Lôi Địa Dự",
+
+"Tốn-Càn":"Phong Thiên Tiểu Súc",
+"Tốn-Đoài":"Phong Trạch Trung Phu",
+"Tốn-Ly":"Phong Hỏa Gia Nhân",
+"Tốn-Chấn":"Phong Lôi Ích",
+"Tốn-Khảm":"Phong Thủy Hoán",
+"Tốn-Cấn":"Phong Sơn Tiệm",
+"Tốn-Khôn":"Phong Địa Quan",
+
+"Khảm-Càn":"Thủy Thiên Nhu",
+"Khảm-Đoài":"Thủy Trạch Tiết",
+"Khảm-Ly":"Thủy Hỏa Ký Tế",
+"Khảm-Chấn":"Thủy Lôi Truân",
+"Khảm-Tốn":"Thủy Phong Tỉnh",
+"Khảm-Cấn":"Thủy Sơn Kiển",
+"Khảm-Khôn":"Thủy Địa Tỷ"
+
+});//========================================
+// 64 QUẺ KINH DỊCH (PHẦN 3)
+//========================================
+
+Object.assign(HEXAGRAM,{
+
+"Cấn-Càn":"Sơn Thiên Đại Súc",
+"Cấn-Đoài":"Sơn Trạch Tổn",
+"Cấn-Ly":"Sơn Hỏa Bí",
+"Cấn-Chấn":"Sơn Lôi Di",
+"Cấn-Tốn":"Sơn Phong Cổ",
+"Cấn-Khảm":"Sơn Thủy Mông",
+"Cấn-Khôn":"Sơn Địa Bác",
+
+"Khôn-Càn":"Địa Thiên Thái",
+"Khôn-Đoài":"Địa Trạch Lâm",
+"Khôn-Ly":"Địa Hỏa Minh Di",
+"Khôn-Chấn":"Địa Lôi Phục",
+"Khôn-Tốn":"Địa Phong Thăng",
+"Khôn-Khảm":"Địa Thủy Sư",
+"Khôn-Cấn":"Địa Sơn Khiêm",
+
+"Cấn-Cấn":"Thuần Cấn",
+"Khôn-Khôn":"Thuần Khôn"
+
+});//========================================
+// NẠP GIÁP (PHẦN 1)
+//========================================
+
+const NAPGIAP = {
+
+"Càn":[
+"Giáp Tý",
+"Giáp Dần",
+"Giáp Thìn",
+"Nhâm Ngọ",
+"Nhâm Thân",
+"Nhâm Tuất"
+],
+
+"Đoài":[
+"Đinh Tỵ",
+"Đinh Mão",
+"Đinh Sửu",
+"Đinh Hợi",
+"Đinh Dậu",
+"Đinh Mùi"
+],
+
+"Ly":[
+"Kỷ Mão",
+"Kỷ Sửu",
+"Kỷ Hợi",
+"Kỷ Dậu",
+"Kỷ Mùi",
+"Kỷ Tỵ"
+],
+
+"Chấn":[
+"Canh Tý",
+"Canh Dần",
+"Canh Thìn",
+"Canh Ngọ",
+"Canh Thân",
+"Canh Tuất"
+],
+
+"Tốn":[
+"Tân Sửu",
+"Tân Hợi",
+"Tân Dậu",
+"Tân Mùi",
+"Tân Tỵ",
+"Tân Mão"
+],
+
+"Khảm":[
+"Mậu Dần",
+"Mậu Thìn",
+"Mậu Ngọ",
+"Mậu Thân",
+"Mậu Tuất",
+"Mậu Tý"
+],
+
+"Cấn":[
+"Bính Thìn",
+"Bính Ngọ",
+"Bính Thân",
+"Bính Tuất",
+"Bính Tý",
+"Bính Dần"
+],
+
+"Khôn":[
+"Ất Mùi",
+"Ất Tỵ",
+"Ất Mão",
+"Quý Sửu",
+"Quý Hợi",
+"Quý Dậu"
+]
+
+};
+
+//========================================
+// LẤY NẠP GIÁP
+//========================================
+
+function layNapGiap(thuong,ha){
+
+let ds=[];
+
+for(let i=0;i<3;i++){
+
+ds.push(NAPGIAP[ha][i]);
+
+}
+
+for(let i=3;i<6;i++){
+
+ds.push(NAPGIAP[thuong][i]);
+
+}
+
+return ds;
+
+}//========================================
+// NGŨ HÀNH ĐỊA CHI
+//========================================
+
+const CHI_NGUHANH = {
+
+"Tý":"Thủy",
+"Sửu":"Thổ",
+"Dần":"Mộc",
+"Mão":"Mộc",
+"Thìn":"Thổ",
+"Tỵ":"Hỏa",
+"Ngọ":"Hỏa",
+"Mùi":"Thổ",
+"Thân":"Kim",
+"Dậu":"Kim",
+"Tuất":"Thổ",
+"Hợi":"Thủy"
+
+};
+
+//========================================
+// QUAN HỆ NGŨ HÀNH
+//========================================
+
+const NGUHANH = {
+
+"Kim":{
+sinh:"Thủy",
+khac:"Mộc"
+},
+
+"Thủy":{
+sinh:"Mộc",
+khac:"Hỏa"
+},
+
+"Mộc":{
+sinh:"Hỏa",
+khac:"Thổ"
+},
+
+"Hỏa":{
+sinh:"Thổ",
+khac:"Kim"
+},
+
+"Thổ":{
+sinh:"Kim",
+khac:"Thủy"
+}
+
+};
+
+//========================================
+// LỤC THÂN
+//========================================
+
+function layLucThan(hanhCung,hanhHao){
+
+if(hanhCung===hanhHao){
+
+return "Huynh Đệ";
+
+}
+
+if(NGUHANH[hanhCung].sinh===hanhHao){
+
+return "Tử Tôn";
+
+}
+
+if(NGUHANH[hanhCung].khac===hanhHao){
+
+return "Thê Tài";
+
+}
+
+if(NGUHANH[hanhHao].sinh===hanhCung){
+
+return "Phụ Mẫu";
+
+}
+
+if(NGUHANH[hanhHao].khac===hanhCung){
+
+return "Quan Quỷ";
+
+}
+
+return "";
+
+}
