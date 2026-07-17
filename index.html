@@ -1,46 +1,106 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Huyền Cơ Dịch Quán</title>
 
 <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
 
-<header class="header">
-<h1>☯ Huyền Cơ Dịch Quán ☯</h1>
-<p>Gieo quẻ Kinh Dịch - Luận giải - Chiêm nghiệm</p>
+<header>
+
+<h1>☯ HUYỀN CƠ DỊCH QUÁN ☯</h1>
+
+<p>Lập Quẻ Lục Hào • Mai Hoa Dịch Số • AI Luận Quẻ</p>
+
 </header>
+
+<nav>
+
+<button id="btnLucHao">Lục Hào</button>
+
+<button id="btnMaiHoa">Mai Hoa</button>
+
+<button id="btnLichSu">Lịch sử</button>
+
+<button id="btnCaiDat">Cài đặt</button>
+
+</nav>
 
 <main>
 
 <section class="card">
 
-<h2>Xin Quẻ</h2>
+<h2>Câu hỏi</h2>
 
-<p>
-Tập trung vào điều bạn muốn hỏi rồi nhấn nút bên dưới.
-</p>
+<textarea
+id="question"
+rows="4"
+placeholder="Nhập câu hỏi muốn xem quẻ..."
+></textarea>
 
-<button id="btnGieo">
-Gieo Quẻ
+</section>
+
+<section class="card">
+
+<h2>Chọn phương pháp</h2>
+
+<select id="method">
+
+<option value="coin">
+3 Đồng Tiền
+</option>
+
+<option value="time">
+Theo Thời Gian
+</option>
+
+<option value="number">
+Theo Con Số
+</option>
+
+</select>
+
+</section>
+
+<section class="card">
+
+<button id="castBtn">
+
+GIEO QUẺ
+
 </button>
 
 </section>
 
-<section class="card hidden" id="result">
+<section
+class="card"
+id="result"
+>
 
-<h2>Kết Quả</h2>
+<h2>KẾT QUẢ</h2>
 
-<div id="queSo"></div>
+<div id="hexagramName">
 
-<div id="queTen"></div>
+Chưa có quẻ
 
-<div id="queNoiDung"></div>
+</div>
+
+<div id="hexagram">
+
+</div>
+
+<div id="analysis">
+
+</div>
 
 </section>
 
@@ -48,13 +108,12 @@ Gieo Quẻ
 
 <footer>
 
-<p>
-© Huyền Cơ Dịch Quán
-</p>
+Huyền Cơ Dịch Quán © 2026
 
 </footer>
 
 <script src="script.js"></script>
 
 </body>
+
 </html>
