@@ -3,30 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gieo Quẻ Kinh Dịch</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Ứng dụng Dịch Lý</title>
+    <!-- Thêm CSS để tối ưu giao diện di động -->
+    <style>
+        body { font-family: sans-serif; padding: 10px; }
+        .la-que-container { overflow-x: auto; }
+        @media (max-width: 600px) {
+            .la-que-bg {
+                transform: scale(0.5);
+                transform-origin: top left;
+                margin-bottom: -200px;
+            }
+        }
+        .tk-highlight {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Gieo Quẻ</h1>
-        <p class="subtitle">Thành tâm xin quẻ, nhấn nút để tung 3 đồng xu</p>
-        
-        <div class="coins-container">
-            <div class="coin" id="coin1"><span class="coin-face">?</span></div>
-            <div class="coin" id="coin2"><span class="coin-face">?</span></div>
-            <div class="coin" id="coin3"><span class="coin-face">?</span></div>
+
+    <div id="app">
+        <!-- Phần hiển thị tên quẻ Mai Hoa đã được xử lý -->
+        <div id="que-info">
+            <h2 id="ten-que">Thiên Trạch Lý</h2>
         </div>
 
-        <button id="tossBtn">Tung Đồng Xu</button>
-        <button id="resetBtn" style="display: none;">Gieo Quẻ Mới</button>
-        
-        <div class="toss-counter">Lần gieo: <span id="tossCount">0</span>/6</div>
-        <div id="result" class="result-text">Sẵn sàng gieo quẻ!</div>
-
-        <!-- Khu vực vẽ 6 hào -->
-        <div id="hexagram" class="hexagram-container"></div>
+        <!-- Bảng Lục Hào -->
+        <div class="la-que-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Hào</th>
+                        <th>T.K (Tuần Không)</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Dữ liệu sẽ được render vào đây -->
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // Cấu trúc dữ liệu mẫu
+        const HEXAGRAM_DATABASE = {
+            "1_2": ["Thiên Trạch Lý", "Dữ liệu quẻ..."]
+        };
+
+        // Hàm lấy tên quẻ chuẩn
+        function getMaiHoaName(upperId, lowerId) {
+            const key = `${upperId}_${lowerId}`;
+            return HEXAGRAM_DATABASE[key] ? HEXAGRAM_DATABASE[key][0] : "Quẻ lạ";
+        }
+
+        // Logic render Tuần Không nổi bật
+        function renderTable(lines) {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = lines.map((line, idx) => `
+                <tr>
+                    <td>Hào ${idx + 1}</td>
+                    <td class="${line.isTK ? 'tk-highlight' : ''}">
+                        ${line.isTK ? 'K' : '-'}
+                    </td>
+                </tr>
+            `).join('');
+        }
+    </script>
 </body>
 </html>
