@@ -12,20 +12,19 @@
         <p class="subtitle">Thành tâm xin quẻ, nhấn nút để tung 3 đồng xu</p>
         
         <div class="coins-container">
-            <div class="coin" id="coin1">
-                <span class="coin-face">?</span>
-            </div>
-            <div class="coin" id="coin2">
-                <span class="coin-face">?</span>
-            </div>
-            <div class="coin" id="coin3">
-                <span class="coin-face">?</span>
-            </div>
+            <div class="coin" id="coin1"><span class="coin-face">?</span></div>
+            <div class="coin" id="coin2"><span class="coin-face">?</span></div>
+            <div class="coin" id="coin3"><span class="coin-face">?</span></div>
         </div>
 
         <button id="tossBtn">Tung Đồng Xu</button>
+        <button id="resetBtn" style="display: none;">Gieo Quẻ Mới</button>
         
-        <div id="result" class="result-text"></div>
+        <div class="toss-counter">Lần gieo: <span id="tossCount">0</span>/6</div>
+        <div id="result" class="result-text">Sẵn sàng gieo quẻ!</div>
+
+        <!-- Khu vực vẽ 6 hào -->
+        <div id="hexagram" class="hexagram-container"></div>
     </div>
 
     <script src="script.js"></script>
