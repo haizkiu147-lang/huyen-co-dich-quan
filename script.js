@@ -52,3 +52,65 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1500); // Đợi 1.5s (1500 milliseconds)
     });
 });
+/* --- PHẦN THÊM MỚI CHO VẼ QUẺ --- */
+
+.toss-counter {
+    margin-top: 15px;
+    font-weight: bold;
+    color: #666;
+}
+
+#resetBtn {
+    background-color: #2e7d32; /* Màu xanh lá cho nút làm mới */
+}
+
+#resetBtn:hover {
+    background-color: #1b5e20;
+}
+
+.hexagram-container {
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column-reverse; /* Quan trọng: Xếp hào từ dưới (Hào 1) lên trên (Hào 6) */
+    align-items: center;
+    gap: 10px;
+    min-height: 180px;
+}
+
+.hao {
+    width: 140px;
+    height: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+/* Hào Dương (1 vạch liền) */
+.hao.duong::before {
+    content: '';
+    width: 100%;
+    height: 100%;
+    background-color: #333;
+    border-radius: 4px;
+}
+
+/* Hào Âm (2 vạch đứt) */
+.hao.am::before,
+.hao.am::after {
+    content: '';
+    width: 45%;
+    height: 100%;
+    background-color: #333;
+    border-radius: 4px;
+}
+
+/* Đánh dấu Hào Động */
+.hao .dong-marker {
+    position: absolute;
+    right: -30px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #8b0000;
+}
