@@ -1,119 +1,33 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Huyền Cơ Dịch Quán</title>
-
-<link rel="stylesheet" href="style.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gieo Quẻ Kinh Dịch</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+    <div class="container">
+        <h1>Gieo Quẻ</h1>
+        <p class="subtitle">Thành tâm xin quẻ, nhấn nút để tung 3 đồng xu</p>
+        
+        <div class="coins-container">
+            <div class="coin" id="coin1">
+                <span class="coin-face">?</span>
+            </div>
+            <div class="coin" id="coin2">
+                <span class="coin-face">?</span>
+            </div>
+            <div class="coin" id="coin3">
+                <span class="coin-face">?</span>
+            </div>
+        </div>
 
-<header>
+        <button id="tossBtn">Tung Đồng Xu</button>
+        
+        <div id="result" class="result-text"></div>
+    </div>
 
-<h1>☯ HUYỀN CƠ DỊCH QUÁN ☯</h1>
-
-<p>Lập Quẻ Lục Hào • Mai Hoa Dịch Số • AI Luận Quẻ</p>
-
-</header>
-
-<nav>
-
-<button id="btnLucHao">Lục Hào</button>
-
-<button id="btnMaiHoa">Mai Hoa</button>
-
-<button id="btnLichSu">Lịch sử</button>
-
-<button id="btnCaiDat">Cài đặt</button>
-
-</nav>
-
-<main>
-
-<section class="card">
-
-<h2>Câu hỏi</h2>
-
-<textarea
-id="question"
-rows="4"
-placeholder="Nhập câu hỏi muốn xem quẻ..."
-></textarea>
-
-</section>
-
-<section class="card">
-
-<h2>Chọn phương pháp</h2>
-
-<select id="method">
-
-<option value="coin">
-3 Đồng Tiền
-</option>
-
-<option value="time">
-Theo Thời Gian
-</option>
-
-<option value="number">
-Theo Con Số
-</option>
-
-</select>
-
-</section>
-
-<section class="card">
-
-<button id="castBtn">
-
-GIEO QUẺ
-
-</button>
-
-</section>
-
-<section
-class="card"
-id="result"
->
-
-<h2>KẾT QUẢ</h2>
-
-<div id="hexagramName">
-
-Chưa có quẻ
-
-</div>
-
-<div id="hexagram">
-
-</div>
-
-<div id="analysis">
-
-</div>
-
-</section>
-
-</main>
-
-<footer>
-
-Huyền Cơ Dịch Quán © 2026
-
-</footer>
-
-<script src="script.js"></script>
-
+    <script src="script.js"></script>
 </body>
-
 </html>
