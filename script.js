@@ -571,3 +571,106 @@ return "Quan Quỷ";
 return "";
 
 }
+//========================================
+// LỤC THÚ
+//========================================
+
+const LUC_THU = [
+"Thanh Long",
+"Chu Tước",
+"Câu Trần",
+"Đằng Xà",
+"Bạch Hổ",
+"Huyền Vũ"
+];
+
+const KHOI_LUC_THU = {
+
+"Giáp":0,
+"Ất":0,
+
+"Bính":1,
+"Đinh":1,
+
+"Mậu":2,
+
+"Kỷ":3,
+
+"Canh":4,
+"Tân":4,
+
+"Nhâm":5,
+"Quý":5
+
+};
+
+function anLucThu(canNgay){
+
+let batDau = KHOI_LUC_THU[canNgay];
+
+let ds=[];
+
+for(let i=0;i<6;i++){
+
+ds.push(LUC_THU[(batDau+i)%6]);
+
+}
+
+return ds;
+
+}
+
+//========================================
+// THẾ - ỨNG
+//========================================
+
+const THE_UNG = {
+
+1:{the:6,ung:3},
+2:{the:1,ung:4},
+3:{the:2,ung:5},
+4:{the:3,ung:6},
+5:{the:4,ung:1},
+6:{the:5,ung:2}
+
+};
+
+function layTheUng(cung){
+
+return THE_UNG[cung] || {the:6,ung:3};
+
+}
+
+//========================================
+// VƯỢNG - TƯỚNG - HƯU - TÙ - TỬ
+//========================================
+
+function vuongSuy(hanhHao,hanhThang){
+
+if(hanhHao===hanhThang){
+
+return "Vượng";
+
+}
+
+if(NGUHANH[hanhThang].sinh===hanhHao){
+
+return "Tướng";
+
+}
+
+if(NGUHANH[hanhHao].sinh===hanhThang){
+
+return "Hưu";
+
+}
+
+if(NGUHANH[hanhHao].khac===hanhThang){
+
+return "Tù";
+
+}
+
+return "Tử";
+
+}
