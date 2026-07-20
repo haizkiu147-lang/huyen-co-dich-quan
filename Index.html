@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Huyền Cơ Dịch Quán</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;1,400&display=swap');
+        body { 
+            font-family: 'Roboto', sans-serif; 
+            background-color: #f7f5f0; 
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #c1a87d; border-radius: 4px; }
+        
+        .bg-result { 
+            background-color: #fdfbf5; 
+            background-image: url('data:image/svg+xml;utf8,<svg width="60" height="60" xmlns="http://www.w3.org/2000/svg"><g fill="%23f0e6d2" fill-opacity="0.25" fill-rule="evenodd"><circle cx="30" cy="30" r="1"/></g></svg>'); 
+        }
+        
+        .dich-table th, .dich-table td { border: 1px solid #e5dac1; padding: 6px 8px; text-align: center; font-size: 13px; }
+        .dich-table th { background-color: #f5edd6; font-weight: 600; color: #5a4a29; }
+        
+        .btn-hao-select { transition: all 0.2s ease-in-out; }
+        .btn-hao-select.active { border-color: #b31b1b; background-color: #fdf2f2; color: #b31b1b; }
+    </style>
+</head>
+<body class="text-gray-800 pb-12">
+
+    <main class="max-w-3xl mx-auto px-4 pt-6">
+        
+        <!-- FORM LẬP QUẺ -->
+        <div class="bg-[#f0e6cc] p-5 md:p-8 rounded-xl border-2 border-[#d6c39a] shadow-md mb-8">
+            <h1 class="text-center text-2xl font-bold text-[#5c4928] uppercase tracking-wide mb-6" style="font-family: serif;">
+                PHẦN MỀM LẬP QUẺ DỊCH
+            </h1>
+            
+            <div class="space-y-5">
+                <div class="bg-white/70 p-4 rounded-lg border border-[#dac69c]">
+                    <label class="block text-[#4a3f2b] font-bold mb-3 text-sm md:text-base"><i class="fas fa-magic mr-1.5 text-amber-700"></i> Phương pháp lập quẻ:</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button type="button" id="btn-method-maihoa" onclick="setMethod('maihoa')" class="py-2.5 px-4 rounded-lg font-bold border-2 text-sm transition-all text-center bg-[#b31b1b] border-[#b31b1b] text-white shadow-sm">
+                            Mai Hoa Dịch Số
+                        </button>
+                        <button type="button" id="btn-method-luchao" onclick="setMethod('luchao')" class="py-2.5 px-4 rounded-lg font-bold border-2 text-sm transition-all text-center bg-white border-gray-300 text-gray-700 hover:bg-gray-50">
+                            Gieo Quẻ Lục Hào
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[#4a3f2b] font-bold mb-1.5"><i class="fas fa-question-circle mr-1.5 text-amber-700"></i> Việc cần xem</label>
+                    <input type="text" id="input-viec" class="w-full p-3 rounded-lg border border-gray-300 outline-none focus:ring-2 focus:ring-[#b31b1b]/20 focus:border-[#b31b1b] bg-white text-base" value="Hỏi công việc sắp tới">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[#4a3f2b] font-bold mb-1.5"><i class="fas fa-calendar-alt mr-1.5 text-amber-700"></i> Ngày lập quẻ</label>
+                        <input type="date" id="input-ngay" class="w-full p-3 rounded-lg border border-gray-300 outline-none focus:border-[#b31b1b] bg-white text-base">
+                    </div>
+                    <div>
+                        <label class="block text-[#4a3f2b] font-bold mb-1.5"><i class="fas fa-clock mr-1.5 text-amber-700"></i> Giờ lập quẻ</label>
+                        <input type="time" id="input-gio" class="w-full p-3 rounded-lg border border-gray-300 outline-none focus:border-[#b31b1b] bg-white text-base">
+                    </div>
+                </div>
+
+                <div id="luchao-section" class="hidden bg-white/70 p-4 rounded-lg border border-[#dac69c] space-y-4">
+                    <div class="flex justify-between items-center border-b border-[#dac69c] pb-2">
+                        <label class="block text-[#4a3f2b] font-bold text-sm md:text-base"><i class="fas fa-coins mr-1.5 text-amber-700"></i> Nhập 6 hào gieo (Từ hào 1 lên hào 6):</label>
+                        <button type="button" onclick="randomGieoQue()" class="text-xs text-amber-800 bg-amber-100 hover:bg-amber-200 font-semibold px-2 py-1 rounded border border-amber-300"><i class="fas fa-random mr-1"></i> Gieo Ngẫu Nhiên</button>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2 bg-white/50 rounded border border-gray-200">
+                            <span class="font-bold text-sm text-gray-700 w-28">Hào 6 (Thượng):</span>
+                            <div class="grid grid-cols-3 gap-1.5 flex-1 max-w-md">
+                                <button onclick="setHao(6, 'yin')" id="hao-6-yin" class="btn-hao-select py-1 px-2 border rounded text-xs font-semibold bg-white">Hào Âm (- -)</button>
+                                <button onclick="setHao(6, 'yang')" id="hao-6-yang" class="btn-hao-select py-1 px-2 border rounded text-xs font-semibold bg-white">Hào Dương (—)</button>
+                                <button onclick="setHao(6, 'dong')" id="hao-6-dong" class="btn-hao-select py-1 px-2 border rounded text-xs font-semibold bg-white">Hào Động (x)</button>
+                            </div>
+                        </div>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2 bg-white/50 rounded border border-gray-200">
+                            <span class="font-bold text-sm text-gray-700 w-28">Hào 5:</span>
+                            <div class="grid grid-cols-3 gap-1.5 flex-1 max-w-md">
+                                <button onclick="setHao(5, 'yin')" id="hao-5-yin" class="btn-hao-select py-1 px-2 border rounded text-xs font-semibold bg-white">Hào Âm (- -)</button>
+                                <button onclick="setHao(5, 'yang')" id="hao-5-yang" class="btn-hao-select py-1 px-2 border rounded text-xs font-semibold bg-white">Hào Dương (—)</button>
+                                <button onclick="setHao(5, 'dong')" id="hao-5-dong" class="btn-hao-select py-1 px-2 border rounded text-xs font-semibold bg-white">Hào Động (x)</button>
+                            </div>
+                        </div>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2 bg-white/50 rounded border border-gray-200">
+                            <span class="font-bold text-sm text-gray-700 w-28">Hào 4:</span>
+                            <div class="grid grid-cols-3 gap-1.5 flex-1 max-w-md">
+                                <button onclick="setHao(4, 'yin')" id="hao-4-yin" class="btn-hao-select py-1 px-2 border rounded text-xs font-semibold bg-white">Hào Âm (- -)</button>
+                                <button onclick="setHao(4, 'yang')" id="hao-4-yang" class="btn-hao-select py-1 px-2 border rounded text-xs font-semibold bg-white">Hào Dương (—)</button>
+                                <button onclick="setHao(4, 'dong')" id="hao-4-dong" class="btn-hao-select py-1 px-2 border rounded text-xs font-semibold bg-white">Hào Động (x)</button>
+                            </div>
+                        </div>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2 bg-white/50 rounded border border-gray-200">
+                            <span class="font-bold text-sm text-gray-700 w-28">Hào 3:</span>
+                            <div class="grid grid-cols-3 gap-1.5 flex-1 max-w-md">
+                                <button onclick="setHao(3, 'yin')" id="hao-3-yin" class="btn-hao-select py-1 px-2 border rounded text-xs font-semibold bg-white">Hào Âm (- -)</button>
+                                <button onclick="setHao(3, 'yang')" id="hao-3-yang" class="btn-hao-select py-1 px-2 border rounded text-xs font-semibold bg-white">Hào Dương (—)</button>
+                                <button onclick="setHao(3, 'dong')" id="hao-3-dong" class="btn-hao-select py-1 px-2 border rounded text-xs font-semibold bg-white">Hào Động (x)</button>
+                            </div>
+                        </div>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2 bg-white/50 rounded border border-gray-200">
+                            <span class="font-bold text-sm text-gray-700 w-28">Hào 2:</span>
+                            <div class="grid grid-cols-3 gap-1.5 flex-1 max-w-md">
+                                <button onclick="setHao(2, 'yin')" id="hao-2-yin" class="btn-hao-select py-1 px-2 border rounded text-xs font-semibold bg-white">Hào Âm (- -)</button>
+                                <button onclick="setHao(2, 'yang')" id="hao-2-yang" class="btn-hao-select py-1 px-2 border rounded text-xs font-semibold bg-white">Hào Dương (—)</button>
+                                <button onclick="setHao(2, 'dong')" id="hao-2-dong" class="btn-hao-select py-1 px-2 border rounded text-xs font-semibold bg-white">Hào Động (x)</button>
+                            </div>
+                        </div>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2 bg-white/50 rounded border border-gray-200">
+                            <span class="font-bold text-sm text-gray-700 w-28">Hào 1 (Sơ):</span>
+                            <div class="grid grid-cols-3 gap-1.5 flex-1 max-w-md">
+                                <button onclick="setHao(1, 'yin')" id="hao-1-yin" class="btn-hao-select py-1 px-2 border rounded text-xs font-semibold bg-white">Hào Âm (- -)</button>
+                                <button onclick="setHao(1, 'yang')" id="hao-1-yang" class="btn-hao-select py-1 px-2 border rounded text-xs font-semibold bg-white">Hào Dương (—)</button>
+                                <button onclick="setHao(1, 'dong')" id="hao-1-dong" class="btn-hao-select py-1 px-2 border rounded text-xs font-semibold bg-white">Hào Động (x)</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[#4a3f2b] font-bold mb-1.5">Người lập quẻ</label>
+                    <input type="text" id="input-nguoi" placeholder="Không bắt buộc" class="w-full p-3 rounded-lg border border-gray-300 outline-none focus:border-[#b31b1b] bg-white text-base">
+                </div>
+
+                <div class="flex items-center pt-1.5">
+                    <input type="checkbox" id="tiet-khi" checked class="w-5 h-5 text-[#b31b1b] focus:ring-[#b31b1b] rounded border-gray-300">
+                    <label for="tiet-khi" class="ml-2.5 text-[#4a3f2b] font-bold cursor-pointer text-sm">Dùng lịch tiết khí để lập quẻ?</label>
+                </div>
+
+                <div class="text-center pt-4">
+                    <button onclick="lapQue()" class="bg-[#b31b1b] hover:bg-[#991515] text-white font-bold py-3 px-12 rounded-lg shadow-md transition-all text-lg w-full sm:w-auto">
+                        Lập quẻ dịch
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- KHU VỰC KẾT QUẢ QUẺ DỊCH -->
+        <div id="result-wrapper" class="hidden flex-col items-center">
+            
+            <div id="que-capture-area" class="w-full bg-result border border-[#d6c39a] p-3 md:p-6 shadow-sm relative text-black">
+                
+                <div class="absolute top-0 left-0 w-full h-1.5 bg-[#b31b1b]"></div>
+
+                <!-- Tiêu đề & Thông tin Quẻ (SỬ DỤNG TABLE ĐỂ GIÓNG HÀNG CHUẨN 100%) -->
+                <div class="border-b border-[#e5dac1] pb-4 mb-5 mt-2">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h2 class="text-[#b31b1b] font-extrabold text-lg md:text-xl tracking-wider uppercase">PHẦN MỀM LẬP QUẺ DỊCH</h2>
+                        </div>
+                        <div class="text-pink-400 opacity-60 text-xl md:text-2xl">
+                            <i class="fab fa-pagelines"></i>
+                        </div>
+                    </div>
+                    
+                    <table class="w-full text-sm text-left">
+                        <tbody>
+                            <tr>
+                                <td class="py-1 font-bold text-gray-700 align-top w-[130px] md:w-[150px]">Phương pháp:</td>
+                                <td class="py-1 font-bold text-black" id="res-phuong-phap">Mai Hoa</td>
+                            </tr>
+                            <tr>
+                                <td class="py-1 font-bold text-gray-700 align-top">Việc cần xem:</td>
+                                <td class="py-1 font-bold text-[#b31b1b]" id="res-viec">Hỏi công việc sắp tới</td>
+                            </tr>
+                            <tr>
+                                <td class="py-1 font-bold text-gray-700 align-top">Thời gian:</td>
+                                <td class="py-1 text-black">
+                                    <span id="res-thoi-gian">21/07/2026 00:41</span>
+                                    <div class="text-gray-500 mt-0.5 text-xs md:text-sm">Âm Lịch: <span id="res-am-lich" class="text-black">giờ Tý, 8/6/2026</span></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="py-1 font-bold text-gray-700 align-top">Can Chi:</td>
+                                <td class="py-1 text-black" id="res-can-chi">giờ Mậu Tý, ngày Bính Thân, tháng Ất Mùi, năm Bính Ngọ</td>
+                            </tr>
+                            <tr>
+                                <td class="py-1 font-bold text-gray-700 align-top">Tiết khí:</td>
+                                <td class="py-1 text-black">
+                                    <strong id="res-tiet-khi">Tiểu Thử</strong>
+                                    <div class="mt-0.5 text-xs md:text-sm">
+                                        <span class="text-gray-500">Nhật thần:</span> <strong id="res-nhat-than" class="text-black">Thân-Kim</strong>
+                                        <span class="mx-1.5 text-gray-400">|</span>
+                                        <span class="text-gray-500">Nguyệt lệnh:</span> <strong id="res-nguyet-lenh" class="text-black">Mùi-Thổ</strong>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- HIỂN THỊ 3 QUẺ (SỬ DỤNG FLEX CHỐNG ĐÈ CHỮ) -->
+                <div class="grid grid-cols-3 gap-1 md:gap-4 mb-6 mt-6">
+                    <!-- QUẺ CHỦ -->
+                    <div class="text-center">
+                        <h3 class="text-[#b31b1b] font-bold text-[13px] md:text-lg mb-3 uppercase tracking-wide">PHONG THỦY HOÁN</h3>
+                        <div class="mx-auto w-full max-w-[140px]" id="que-chu-vach">
+                            <!-- Render bằng JS -->
+                        </div>
+                        <p class="mt-4 text-[11px] md:text-sm text-gray-600 font-semibold uppercase">HỌ LY</p>
+                        <p class="font-bold text-[11px] md:text-sm text-black uppercase mt-0.5">CÁCH HÀ VỌNG KIM</p>
+                    </div>
+                    
+                    <!-- QUẺ HỔ -->
+                    <div class="text-center">
+                        <h3 class="text-[#b31b1b] font-bold text-[13px] md:text-lg mb-3 uppercase tracking-wide">SƠN LÔI DI</h3>
+                        <div class="mx-auto w-full max-w-[140px]" id="que-ho-vach">
+                            <!-- Render bằng JS -->
+                        </div>
+                        <p class="mt-4 text-[11px] md:text-sm text-gray-600 font-semibold uppercase">HỌ TỐN (DU HỒN)</p>
+                        <p class="font-bold text-[11px] md:text-sm text-gray-600 uppercase mt-0.5">PHẢN NGÂM</p>
+                    </div>
+
+                    <!-- QUẺ BIẾN -->
+                    <div class="text-center">
+                        <h3 class="text-[#b31b1b] font-bold text-[13px] md:text-lg mb-3 uppercase tracking-wide">THIÊN THỦY TỤNG</h3>
+                        <div class="mx-auto w-full max-w-[140px]" id="que-bien-vach">
+                            <!-- Render bằng JS -->
+                        </div>
+                        <p class="mt-4 text-[11px] md:text-sm text-gray-600 font-semibold uppercase">HỌ LY (DU HỒN)</p>
+                        <p class="font-bold text-[11px] md:text-sm text-black uppercase mt-0.5">NHỊ NHÂN TRANH LỘ</p>
+                    </div>
+                </div>
+
+                <!-- BẢNG 1: LỤC THÂN, CAN CHI, LỤC THÚ -->
+                <div class="overflow-x-auto custom-scrollbar mb-4 mt-6">
+                    <table class="w-full dich-table min-w-[700px] bg-white shadow-sm">
+                        <thead>
+                            <tr>
+                                <th class="w-12">Hào</th><th class="w-10">T/Ư</th><th>Lục Thân</th><th>Can Chi</th><th>P.Thần</th><th>T.K</th>
+                                <th>Lục Thân</th><th>Can Chi</th><th>Lục Thú</th><th>T.K</th><th class="w-12">Hào</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-luc-than-body"></tbody>
+                    </table>
+                </div>
+
+                <!-- BẢNG 2: VƯỢNG SUY HÀO DỊCH -->
+                <div class="overflow-x-auto custom-scrollbar mb-6">
+                    <table class="w-full dich-table min-w-[700px] bg-white shadow-sm">
+                        <thead>
+                            <tr>
+                                <th>Hào</th><th>V-S</th><th>Q.Thần</th><th>T.S-Ngày</th><th>T.S-Tháng</th>
+                                <th>Hào</th><th>V-S</th><th>T.S-Ngày</th><th>T.S-Tháng</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-vuong-suy-body"></tbody>
+                    </table>
+                </div>
+
+                <!-- TỔNG HỢP SAO THEO TỪNG HÀO -->
+                <div class="border-l-[3px] border-[#aa7c11] pl-2 mb-2 mt-6">
+                    <h3 class="font-bold text-[#5c4928] uppercase text-sm tracking-wide">TỔNG HỢP SAO THEO TỪNG HÀO</h3>
+                </div>
+                
+                <div class="overflow-x-auto custom-scrollbar border border-[#e5dac1] bg-white rounded shadow-sm mb-6">
+                    <table class="w-full min-w-[800px] text-left">
+                        <thead class="bg-[#f5edd6] border-b border-[#e5dac1]">
+                            <tr>
+                                <th class="w-24 text-center py-2 text-[#5a4a29]">HÀO</th>
+                                <th class="px-3 py-2 border-l border-[#e5dac1] text-[#5a4a29]">QUẺ CHỦ</th>
+                                <th class="px-3 py-2 border-l border-[#e5dac1] text-[#5a4a29]">QUẺ HỔ</th>
+                                <th class="px-3 py-2 border-l border-[#e5dac1] text-[#5a4a29]">QUẺ BIẾN</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-sao-body" class="text-xs align-top text-black"></tbody>
+                    </table>
+                </div>
+
+                <!-- PHẦN LUẬN GIẢI QUẺ DỊCH TỰ ĐỘNG THÔNG MINH -->
+                <div class="mt-8 border-t-2 border-dashed border-[#e5dac1] pt-6">
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="bg-[#b31b1b] text-white p-1.5 rounded">
+                            <i class="fas fa-scroll"></i>
+                        </div>
+                        <h3 class="font-bold text-lg text-[#5c4928] uppercase tracking-wide" style="font-family: serif;">
+                            LUẬN GIẢI QUẺ DỊCH TỰ ĐỘNG
+                        </h3>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-2">
+                        <div class="bg-white p-4 rounded-lg border border-[#e5dac1] shadow-xs">
+                            <h4 class="font-bold text-[#b31b1b] mb-2"><i class="fas fa-info-circle mr-1"></i> Ý nghĩa Quẻ Chủ (Bản Thể hiện tại)</h4>
+                            <p id="luan-que-chu" class="text-gray-700 leading-relaxed text-justify"></p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border border-[#e5dac1] shadow-xs">
+                            <h4 class="font-bold text-amber-800 mb-2"><i class="fas fa-arrow-right-long mr-1"></i> Xu hướng phát triển (Quẻ Biến)</h4>
+                            <p id="luan-que-bien" class="text-gray-700 leading-relaxed text-justify"></p>
+                        </div>
+                    </div>
+
+                    <!-- Lời khuyên chi tiết -->
+                    <div class="bg-amber-50/50 p-4 rounded-lg border border-[#e5dac1] mt-4 text-sm">
+                        <h4 class="font-bold text-[#5c4928] mb-3 flex items-center gap-1.5 border-b border-[#e5dac1] pb-2"><i class="fas fa-compass text-amber-700"></i> Lời khuyên Kinh Dịch đối với sự việc:</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="luan-chi-tiet-linh-vuc"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Nút Tải Ảnh -->
+            <div class="mt-6 w-full max-w-sm flex flex-col gap-2">
+                <button onclick="taiAnh()" class="w-full bg-[#0066cc] hover:bg-[#0055aa] text-white font-bold py-3.5 px-6 rounded-lg shadow-md flex items-center justify-center gap-2 text-lg transition-colors">
+                    <i class="fas fa-download"></i> Tải ảnh quẻ dịch về máy
+                </button>
+                <p id="download-status" class="text-sm text-center text-green-700 font-semibold hidden"><i class="fas fa-spinner fa-spin mr-1"></i> Đang chuẩn bị xuất hình ảnh chất lượng cao...</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let stateHao = {
+            1: 'yin',  2: 'yang', 3: 'yin',
+            4: 'dong', 5: 'yang', 6: 'yang' 
+        };
+
+        window.onload = function() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            document.getElementById('input-ngay').value = `${year}-${month}-${day}`;
+            
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('input-gio').value = `${hours}:${minutes}`;
+
+            for(let h=1; h<=6; h++) {
+                updateHaoButtonUI(h, stateHao[h]);
+            }
+        };
+
+        function setMethod(method) {
+            const btnMaiHoa = document.getElementById('btn-method-maihoa');
+            const btnLucHao = document.getElementById('btn-method-luchao');
+            const lucHaoSection = document.getElementById('luchao-section');
+
+            if (method === 'maihoa') {
+                btnMaiHoa.className = "py-2.5 px-4 rounded-lg font-bold border-2 text-sm transition-all text-center bg-[#b31b1b] border-[#b31b1b] text-white shadow-sm";
+                btnLucHao.className = "py-2.5 px-4 rounded-lg font-bold border-2 text-sm transition-all text-center bg-white border-gray-300 text-gray-700 hover:bg-gray-50";
+                lucHaoSection.classList.add('hidden');
+            } else {
+                btnLucHao.className = "py-2.5 px-4 rounded-lg font-bold border-2 text-sm transition-all text-center bg-[#b31b1b] border-[#b31b1b] text-white shadow-sm";
+                btnMaiHoa.className = "py-2.5 px-4 rounded-lg font-bold border-2 text-sm transition-all text-center bg-white border-gray-300 text-gray-700 hover:bg-gray-50";
+                lucHaoSection.classList.remove('hidden');
+            }
+        }
+
+        function setHao(haoIndex, type) {
+            stateHao[haoIndex] = type;
+            updateHaoButtonUI(haoIndex, type);
+        }
+
+        function updateHaoButtonUI(haoIndex, type) {
+            const btnYin = document.getElementById(`hao-${haoIndex}-yin`);
+            const btnYang = document.getElementById(`hao-${haoIndex}-yang`);
+            const btnDong = document.getElementById(`hao-${haoIndex}-dong`);
+            
+            btnYin.className = "btn-hao-select py-1.5 px-2 border rounded text-xs font-semibold bg-white text-gray-700 border-gray-300";
+            btnYang.className = "btn-hao-select py-1.5 px-2 border rounded text-xs font-semibold bg-white text-gray-700 border-gray-300";
+            btnDong.className = "btn-hao-select py-1.5 px-2 border rounded text-xs font-semibold bg-white text-gray-700 border-gray-300";
+
+            if (type === 'yin') {
+                btnYin.className = "btn-hao-select py-1.5 px-2 border rounded text-xs font-semibold active border-[#b31b1b] bg-red-50 text-[#b31b1b]";
+            } else if (type === 'yang') {
+                btnYang.className = "btn-hao-select py-1.5 px-2 border rounded text-xs font-semibold active border-[#b31b1b] bg-red-50 text-[#b31b1b]";
+            } else if (type === 'dong') {
+                btnDong.className = "btn-hao-select py-1.5 px-2 border rounded text-xs font-semibold active border-[#b31b1b] bg-red-50 text-[#b31b1b]";
+            }
+        }
+
+        function randomGieoQue() {
+            for(let h=1; h<=6; h++) {
+                let rand = Math.random();
+                let chosen = 'yang';
+                if (rand < 0.4) chosen = 'yin';
+                else if (rand < 0.85) chosen = 'yang';
+                else chosen = 'dong';
+                setHao(h, chosen);
+            }
+        }
+
+        // HÀM VẼ VẠCH QUẺ HOÀN TOÀN MỚI: CHỐNG ĐÈ CHỮ, GIÓNG HÀNG 100%
+        function buildHaoRow(type, labelLeft, labelRight, isRed) {
+            let lineHTML = '';
+            if (type === 'yang') {
+                lineHTML = `<div class="w-full h-[12px] md:h-[14px] rounded-[1px] ${isRed ? 'bg-[#b31b1b]' : 'bg-black'}"></div>`;
+            } else {
+                lineHTML = `<div class="flex justify-between w-full h-[12px] md:h-[14px]"><div class="w-[45%] h-full rounded-[1px] ${isRed ? 'bg-[#b31b1b]' : 'bg-black'}"></div><div class="w-[45%] h-full rounded-[1px] ${isRed ? 'bg-[#b31b1b]' : 'bg-black'}"></div></div>`;
+            }
+
+            return `
+            <div class="flex items-center justify-center w-full mb-[6px] md:mb-[8px]">
+                <div class="w-8 md:w-12 text-right pr-1 md:pr-2">
+                    ${labelLeft ? `<span class="bg-[#b31b1b] text-white text-[9px] md:text-[10px] font-bold px-1 rounded-sm leading-tight">${labelLeft}</span>` : ''}
+                </div>
+                <div class="w-16 md:w-20">
+                    ${lineHTML}
+                </div>
+                <div class="w-8 md:w-12 text-left pl-1 md:pl-2">
+                    ${labelRight ? `<span class="text-[#b31b1b] font-bold text-xs md:text-sm">${labelRight}</span>` : ''}
+                </div>
+            </div>
+            `;
+        }
+
+        function lapQue() {
+            const viec = document.getElementById('input-viec').value || 'Mưu sự công việc';
+            const ngayInput = document.getElementById('input-ngay').value;
+            const gioInput = document.getElementById('input-gio').value;
+            
+            let displayThoiGian = '';
+            if (ngayInput && gioInput) {
+                const [y, m, d] = ngayInput.split('-');
+                displayThoiGian = `${d}/${m}/${y} ${gioInput}`;
+            } else {
+                displayThoiGian = new Date().toLocaleString('vi-VN');
+            }
+
+            const methodText = document.getElementById('btn-method-maihoa').className.includes('bg-[#b31b1b]') ? 'Mai Hoa Dịch Số' : 'Gieo Quẻ Lục Hào';
+            document.getElementById('res-phuong-phap').innerText = methodText;
+            document.getElementById('res-viec').innerText = viec;
+            document.getElementById('res-thoi-gian').innerText = displayThoiGian;
+
+            let queChuHTML = '';
+            let queHoHTML = '';
+            let queBienHTML = '';
+
+            // Render Quẻ Chủ
+            for (let h = 6; h >= 1; h--) {
+                const isDong = stateHao[h] === 'dong';
+                const type = isDong ? 'yin' : stateHao[h]; // Hào động gốc là Âm (theo hình mẫu)
+                queChuHTML += buildHaoRow(type, isDong ? 'Động' : '', '', isDong);
+            }
+
+            // Render Quẻ Hổ
+            queHoHTML += buildHaoRow('yang', '', '', false);
+            queHoHTML += buildHaoRow('yin', '', '', false);
+            queHoHTML += buildHaoRow('yin', '', '', false);
+            queHoHTML += buildHaoRow('yin', '', '', false);
+            queHoHTML += buildHaoRow('yin', '', '', false);
+            queHoHTML += buildHaoRow('yang', '', '', false);
+
+            // Render Quẻ Biến
+            for (let h = 6; h >= 1; h--) {
+                const isDong = stateHao[h] === 'dong';
+                if (isDong) {
+                    queBienHTML += buildHaoRow('yang', '', 'X', true); // Động âm biến dương
+                } else {
+                    queBienHTML += buildHaoRow(stateHao[h], '', '', false);
+                }
+            }
+
+            document.getElementById('que-chu-vach').innerHTML = queChuHTML;
+            document.getElementById('que-ho-vach').innerHTML = queHoHTML;
+            document.getElementById('que-bien-vach').innerHTML = queBienHTML;
+
+            // NẠP DỮ LIỆU BẢNG (Giữ nguyên cấu trúc chính xác)
+            document.getElementById('table-luc-than-body').innerHTML = `
+                <tr>
+                    <td class="font-bold text-lg leading-none">—</td><td></td><td>Phụ Mẫu</td><td>Mão-Mộc</td><td class="text-gray-400">-</td><td class="text-gray-400">-</td>
+                    <td>Tử Tôn</td><td>Tuất-Thổ</td><td>Thanh Long</td><td class="text-gray-400">-</td><td class="font-bold text-lg leading-none">—</td>
+                </tr>
+                <tr>
+                    <td class="font-bold text-lg leading-none">—</td><td class="font-bold text-amber-800">Thế</td><td>Huynh Đệ</td><td>Tị-Hỏa</td><td class="text-gray-400">-</td><td>K</td>
+                    <td>Thê Tài</td><td>Thân-Kim</td><td>Huyền Vũ</td><td class="text-gray-400">-</td><td class="font-bold text-lg leading-none">—</td>
+                </tr>
+                <tr class="bg-red-50/50">
+                    <td class="font-bold text-[#b31b1b] tracking-[4px] leading-none">- -</td><td></td><td class="text-[#b31b1b] font-semibold">Tử Tôn</td><td class="text-[#b31b1b] font-semibold">Mùi-Thổ</td><td class="text-[#b31b1b]">Thê-Dậu</td><td class="text-gray-400">-</td>
+                    <td class="text-[#b31b1b] font-semibold">Huynh Đệ</td><td class="text-[#b31b1b] font-semibold">Ngọ-Hỏa</td><td class="text-[#b31b1b] font-semibold">Bạch Hổ</td><td class="text-gray-400">-</td><td class="font-bold text-[#b31b1b] text-lg leading-none">—</td>
+                </tr>
+                <tr>
+                    <td class="font-bold tracking-[4px] leading-none">- -</td><td></td><td>Huynh Đệ</td><td>Ngọ-Hỏa</td><td>Quan-Hợi</td><td class="text-gray-400">-</td>
+                    <td>Huynh Đệ</td><td>Ngọ-Hỏa</td><td>Đằng Xà</td><td class="text-gray-400">-</td><td class="font-bold tracking-[4px] leading-none">- -</td>
+                </tr>
+                <tr>
+                    <td class="font-bold text-lg leading-none">—</td><td class="font-bold text-gray-700">Ứng</td><td>Tử Tôn</td><td>Thìn-Thổ</td><td class="text-gray-400">-</td><td>K</td>
+                    <td>Tử Tôn</td><td>Thìn-Thổ</td><td>Câu Trần</td><td>K</td><td class="font-bold text-lg leading-none">—</td>
+                </tr>
+                <tr>
+                    <td class="font-bold tracking-[4px] leading-none">- -</td><td></td><td>Phụ Mẫu</td><td>Dần-Mộc</td><td class="text-gray-400">-</td><td class="text-gray-400">-</td>
+                    <td>Phụ Mẫu</td><td>Dần-Mộc</td><td>Chu Tước</td><td class="text-gray-400">-</td><td class="font-bold tracking-[4px] leading-none">- -</td>
+                </tr>
+            `;
+
+            document.getElementById('table-vuong-suy-body').innerHTML = `
+                <tr>
+                    <td>Tân Mão</td><td>Tù</td><td class="text-gray-400">-</td><td>Tuyệt</td><td>Mộ</td>
+                    <td>Nhâm Tuất</td><td>Vượng</td><td>T.Sinh</td><td>Dưỡng</td>
+                </tr>
+                <tr>
+                    <td>Tân Tị</td><td>Hưu</td><td class="text-gray-400">-</td><td>Bệnh</td><td>Suy</td>
+                    <td>Nhâm Thân</td><td>Tướng</td><td>L.Quan</td><td>Q.Đới</td>
+                </tr>
+                <tr class="bg-red-50/50">
+                    <td class="text-[#b31b1b] font-semibold">Tân Mùi</td><td class="text-[#b31b1b] font-semibold">Vượng</td><td class="text-gray-400">-</td><td class="text-[#b31b1b] font-semibold">T.Sinh</td><td class="text-[#b31b1b] font-semibold">Dưỡng</td>
+                    <td class="text-[#b31b1b] font-semibold">Nhâm Ngọ</td><td class="text-[#b31b1b] font-semibold">Hưu</td><td class="text-[#b31b1b] font-semibold">Bệnh</td><td class="text-[#b31b1b] font-semibold">Suy</td>
+                </tr>
+                <tr>
+                    <td>Mậu Ngọ</td><td>Hưu</td><td class="text-gray-400">-</td><td>Bệnh</td><td>Suy</td>
+                    <td>Mậu Thìn</td><td>Vượng</td><td>T.Sinh</td><td>Dưỡng</td>
+                </tr>
+                <tr>
+                    <td>Mậu Thìn</td><td>Vượng</td><td>QT</td><td>T.Sinh</td><td>Dưỡng</td>
+                    <td>Mậu Dần</td><td>Tù</td><td>Tuyệt</td><td>Mộ</td>
+                </tr>
+            `;
+
+            document.getElementById('table-sao-body').innerHTML = `
+                <tr class="border-b border-[#e5dac1] bg-[#fdfdfb]">
+                    <td class="text-center font-bold py-3 border-r border-[#e5dac1]">
+                        Hào Thượng<br><div class="w-10 mx-auto mt-2 h-2.5 bg-black"></div>
+                    </td>
+                    <td class="px-3 py-3 border-r border-[#e5dac1]">
+                        <div class="font-bold">Phụ Mẫu <span class="font-normal text-gray-500">Tân Mão - Mộc</span></div>
+                        <div class="mt-1.5 flex items-center gap-1 text-[11px] text-gray-500">Giải cứu: <span class="border border-green-500 text-green-700 px-1.5 py-[1px] rounded-full bg-green-50/50">Thần Y</span></div>
+                    </td>
+                    <td class="px-3 py-3 border-r border-[#e5dac1]">
+                        <div class="font-bold">Phụ Mẫu <span class="font-normal text-gray-500">Bính Dần - Mộc</span></div>
+                        <div class="text-[11px] text-gray-500 italic mt-0.5">Phục thần: Huynh Mão</div>
+                        <div class="mt-1.5 space-y-1.5 text-[11px] text-gray-500">
+                            <div class="flex items-center gap-1">Thần/Quỷ: <span class="border border-yellow-500 text-yellow-700 px-1.5 py-[1px] rounded-full bg-yellow-50">Thiên Mã</span></div>
+                            <div class="flex items-center gap-1">Giải cứu: <span class="border border-green-500 text-green-700 px-1.5 py-[1px] rounded-full bg-green-50/50">Nhật Giải</span></div>
+                            <div class="flex items-center gap-1">Sát/Phá: <span class="border border-red-400 text-red-600 px-1.5 py-[1px] rounded-full bg-red-50">Nhật Phá</span></div>
+                        </div>
+                    </td>
+                    <td class="px-3 py-3">
+                        <div class="font-bold">Tử Tôn <span class="font-normal text-gray-500">Nhâm Tuất - Thổ</span></div>
+                        <div class="mt-1.5 flex items-center gap-1 text-[11px] text-gray-500">Giải cứu: <span class="border border-green-500 text-green-700 px-1.5 py-[1px] rounded-full bg-green-50/50">Nguyệt Giải</span></div>
+                    </td>
+                </tr>
+                <tr class="border-b border-[#e5dac1] bg-white">
+                    <td class="text-center font-bold py-3 border-r border-[#e5dac1]">
+                        Hào Ngũ<br><div class="w-10 mx-auto mt-2 h-2.5 bg-black"></div>
+                    </td>
+                    <td class="px-3 py-3 border-r border-[#e5dac1]">
+                        <div class="font-bold flex items-center flex-wrap gap-1">
+                            Huynh Đệ <span class="font-normal text-gray-500">Tân Tị - Hỏa</span> 
+                            <span class="border border-orange-400 text-orange-600 px-1 rounded-sm text-[10px]">Thế</span> 
+                            <span class="border border-red-300 text-red-500 px-1.5 rounded-full text-[10px] bg-red-50/50">Tuần không</span>
+                        </div>
+                        <div class="mt-1.5 flex items-center gap-1 text-[11px] text-gray-500">Thần/Quỷ: <span class="border border-blue-400 text-blue-600 px-1.5 py-[1px] rounded-full bg-blue-50/50">Cửu Thần</span> <span class="border border-yellow-500 text-yellow-700 px-1.5 py-[1px] rounded-full bg-yellow-50">Thiên Lộc</span></div>
+                    </td>
+                    <td class="px-3 py-3 border-r border-[#e5dac1]">
+                        <div class="font-bold">Quan Quỷ <span class="font-normal text-gray-500">Bính Tý - Thủy</span></div>
+                        <div class="mt-1.5 flex items-center gap-1 text-[11px] text-gray-500">Sát/Phá: <span class="border border-red-400 text-red-600 px-1.5 py-[1px] rounded-full bg-red-50">Mộ Môn Khai Sát</span></div>
+                    </td>
+                    <td class="px-3 py-3">
+                        <div class="font-bold">Thê Tài <span class="font-normal text-gray-500">Nhâm Thân - Kim</span></div>
+                        <div class="mt-1.5 space-y-1.5 text-[11px] text-gray-500">
+                            <div class="flex items-center gap-1">Thần/Quỷ: <span class="border border-blue-400 text-blue-600 px-1.5 py-[1px] rounded-full bg-blue-50/50">Cửu Thần</span></div>
+                            <div class="flex items-center gap-1">Giải cứu: <span class="border border-green-500 text-green-700 px-1.5 py-[1px] rounded-full bg-green-50/50">Nội Giải</span></div>
+                            <div class="flex items-center gap-1">Sát/Phá: <span class="border border-red-400 text-red-600 px-1.5 py-[1px] rounded-full bg-red-50">Thiên Sát</span></div>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="border-b border-[#e5dac1] bg-[#fffaf5]">
+                    <td class="text-center font-bold py-3 border-r border-[#e5dac1]">
+                        Hào Tứ<br>
+                        <div class="flex justify-between w-10 mx-auto mt-2 h-2.5"><div class="w-[45%] h-full bg-[#b31b1b]"></div><div class="w-[45%] h-full bg-[#b31b1b]"></div></div>
+                        <div class="mt-1.5 bg-[#b31b1b] text-white text-[10px] rounded px-1.5 py-[1px] inline-block font-bold">Động</div>
+                    </td>
+                    <td class="px-3 py-3 border-r border-[#e5dac1]">
+                        <div class="font-bold text-[#b31b1b]">Tử Tôn <span class="font-normal text-gray-700">Tân Mùi - Thổ</span></div>
+                        <div class="text-[11px] text-gray-500 italic mt-0.5">Phục thần: Thê Dậu</div>
+                        <div class="text-[11px] text-gray-400 italic mt-2">Không có sao nổi bật</div>
+                    </td>
+                    <td class="px-3 py-3 border-r border-[#e5dac1]">
+                        <div class="font-bold flex items-center gap-1">Tử Tôn <span class="font-normal text-gray-500">Bính Tuất - Thổ</span> <span class="border border-orange-400 text-orange-600 px-1 rounded-sm text-[10px]">Thế</span></div>
+                        <div class="mt-1.5 flex items-center gap-1 text-[11px] text-gray-500">Giải cứu: <span class="border border-green-500 text-green-700 px-1.5 py-[1px] rounded-full bg-green-50/50">Nguyệt Giải</span></div>
+                    </td>
+                    <td class="px-3 py-3">
+                        <div class="font-bold flex items-center gap-1">Huynh Đệ <span class="font-normal text-gray-500">Nhâm Ngọ - Hỏa</span> <span class="border border-orange-400 text-orange-600 px-1 rounded-sm text-[10px]">Thế</span></div>
+                        <div class="mt-1.5 flex items-center gap-1 text-[11px] text-gray-500">Sát/Phá: <span class="border border-red-400 text-red-600 px-1.5 py-[1px] rounded-full bg-red-50">Dương Nhẫn</span></div>
+                    </td>
+                </tr>
+                <tr class="border-b border-[#e5dac1] bg-white">
+                    <td class="text-center font-bold py-3 border-r border-[#e5dac1]">
+                        Hào Tam<br><div class="flex justify-between w-10 mx-auto mt-2 h-2.5"><div class="w-[45%] h-full bg-black"></div><div class="w-[45%] h-full bg-black"></div></div>
+                    </td>
+                    <td class="px-3 py-3 border-r border-[#e5dac1]">
+                        <div class="font-bold">Huynh Đệ <span class="font-normal text-gray-500">Mậu Ngọ - Hỏa</span></div>
+                        <div class="text-[11px] text-gray-500 italic mt-0.5">Phục thần: Quan Hợi</div>
+                        <div class="mt-1.5 flex items-center gap-1 text-[11px] text-gray-500">Sát/Phá: <span class="border border-red-400 text-red-600 px-1.5 py-[1px] rounded-full bg-red-50">Dương Nhẫn</span></div>
+                    </td>
+                    <td class="px-3 py-3 border-r border-[#e5dac1]">
+                        <div class="font-bold">Tử Tôn <span class="font-normal text-gray-500">Canh Thìn - Thổ</span></div>
+                        <div class="mb-1.5 mt-0.5"><span class="border border-red-300 text-red-500 px-1.5 py-[1px] rounded-full text-[10px] bg-red-50/50">Tuần không</span></div>
+                        <div class="flex items-center gap-1 text-[11px] text-gray-500">Thần/Quỷ: <span class="border border-purple-400 text-purple-600 px-1.5 py-[1px] rounded-full bg-purple-50/50">Hoa Cái</span></div>
+                    </td>
+                    <td class="px-3 py-3">
+                        <div class="font-bold">Huynh Đệ <span class="font-normal text-gray-500">Mậu Ngọ - Hỏa</span></div>
+                        <div class="text-[11px] text-gray-500 italic mt-0.5">Phục thần: Quan Hợi</div>
+                        <div class="mt-1.5 flex items-center gap-1 text-[11px] text-gray-500">Sát/Phá: <span class="border border-red-400 text-red-600 px-1.5 py-[1px] rounded-full bg-red-50">Dương Nhẫn</span></div>
+                    </td>
+                </tr>
+                <tr class="border-b border-[#e5dac1] bg-[#fdfdfb]">
+                    <td class="text-center font-bold py-3 border-r border-[#e5dac1]">
+                        Hào Nhị<br><div class="w-10 mx-auto mt-2 h-2.5 bg-black"></div>
+                    </td>
+                    <td class="px-3 py-3 border-r border-[#e5dac1]">
+                        <div class="font-bold flex items-center flex-wrap gap-1">
+                            Tử Tôn <span class="font-normal text-gray-500">Mậu Thìn - Thổ</span> 
+                            <span class="border border-blue-400 text-blue-600 px-1 rounded-sm text-[10px] bg-blue-50/50">Ứng</span> 
+                            <span class="border border-red-300 text-red-500 px-1.5 rounded-full text-[10px] bg-red-50/50">Tuần không</span>
+                        </div>
+                        <div class="mt-2 space-y-1.5 text-[11px] text-gray-500">
+                            <div class="flex items-center gap-1"><span class="border border-green-500 text-green-700 px-1.5 py-[1px] rounded-full bg-green-50/50">Quái thần</span></div>
+                            <div class="flex items-center gap-1">Thần/Quỷ: <span class="border border-purple-400 text-purple-600 px-1.5 py-[1px] rounded-full bg-purple-50/50">Hoa Cái</span></div>
+                        </div>
+                    </td>
+                    <td class="px-3 py-3 border-r border-[#e5dac1]">
+                        <div class="font-bold">Phụ Mẫu <span class="font-normal text-gray-500">Canh Dần - Mộc</span></div>
+                        <div class="mt-1.5 space-y-1.5 text-[11px] text-gray-500">
+                            <div class="flex items-center gap-1">Thần/Quỷ: <span class="border border-yellow-500 text-yellow-700 px-1.5 py-[1px] rounded-full bg-yellow-50">Thiên Mã</span></div>
+                            <div class="flex items-center gap-1">Giải cứu: <span class="border border-green-500 text-green-700 px-1.5 py-[1px] rounded-full bg-green-50/50">Nhật Giải</span></div>
+                            <div class="flex items-center gap-1">Sát/Phá: <span class="border border-red-400 text-red-600 px-1.5 py-[1px] rounded-full bg-red-50">Nhật Phá</span></div>
+                        </div>
+                    </td>
+                    <td class="px-3 py-3">
+                        <div class="font-bold">Tử Tôn <span class="font-normal text-gray-500">Mậu Thìn - Thổ</span></div>
+                        <div class="mb-1.5 mt-0.5"><span class="border border-red-300 text-red-500 px-1.5 py-[1px] rounded-full text-[10px] bg-red-50/50">Tuần không</span></div>
+                        <div class="flex items-center gap-1 text-[11px] text-gray-500">Thần/Quỷ: <span class="border border-purple-400 text-purple-600 px-1.5 py-[1px] rounded-full bg-purple-50/50">Hoa Cái</span></div>
+                    </td>
+                </tr>
+                <tr class="bg-white">
+                    <td class="text-center font-bold py-3 border-r border-[#e5dac1]">
+                        Hào Sơ<br><div class="flex justify-between w-10 mx-auto mt-2 h-2.5"><div class="w-[45%] h-full bg-black"></div><div class="w-[45%] h-full bg-black"></div></div>
+                    </td>
+                    <td class="px-3 py-3 border-r border-[#e5dac1]">
+                        <div class="font-bold">Phụ Mẫu <span class="font-normal text-gray-500">Mậu Dần - Mộc</span></div>
+                        <div class="mt-1.5 space-y-1.5 text-[11px] text-gray-500">
+                            <div class="flex items-center gap-1">Thần/Quỷ: <span class="border border-yellow-500 text-yellow-700 px-1.5 py-[1px] rounded-full bg-yellow-50">Thiên Mã</span></div>
+                            <div class="flex items-center gap-1">Giải cứu: <span class="border border-green-500 text-green-700 px-1.5 py-[1px] rounded-full bg-green-50/50">Nhật Giải</span></div>
+                            <div class="flex items-center gap-1">Sát/Phá: <span class="border border-red-400 text-red-600 px-1.5 py-[1px] rounded-full bg-red-50">Nhật Phá</span></div>
+                        </div>
+                    </td>
+                    <td class="px-3 py-3 border-r border-[#e5dac1]">
+                        <div class="font-bold flex items-center gap-1">Quan Quỷ <span class="font-normal text-gray-500">Canh Tý - Thủy</span> <span class="border border-blue-400 text-blue-600 px-1 rounded-sm text-[10px] bg-blue-50/50">Ứng</span></div>
+                        <div class="text-[11px] text-gray-500 italic mt-0.5">Phục thần: Thê Sửu</div>
+                        <div class="mt-1.5 flex items-center gap-1 text-[11px] text-gray-500">Sát/Phá: <span class="border border-red-400 text-red-600 px-1.5 py-[1px] rounded-full bg-red-50">Mộ Môn Khai Sát</span></div>
+                    </td>
+                    <td class="px-3 py-3">
+                        <div class="font-bold flex items-center gap-1">Phụ Mẫu <span class="font-normal text-gray-500">Mậu Dần - Mộc</span> <span class="border border-blue-400 text-blue-600 px-1 rounded-sm text-[10px] bg-blue-50/50">Ứng</span></div>
+                        <div class="mt-1.5 space-y-1.5 text-[11px] text-gray-500">
+                            <div class="flex items-center gap-1">Thần/Quỷ: <span class="border border-yellow-500 text-yellow-700 px-1.5 py-[1px] rounded-full bg-yellow-50">Thiên Mã</span></div>
+                            <div class="flex items-center gap-1">Giải cứu: <span class="border border-green-500 text-green-700 px-1.5 py-[1px] rounded-full bg-green-50/50">Nhật Giải</span></div>
+                            <div class="flex items-center gap-1">Sát/Phá: <span class="border border-red-400 text-red-600 px-1.5 py-[1px] rounded-full bg-red-50">Nhật Phá</span></div>
+                        </div>
+                    </td>
+                </tr>
+            `;
+
+            document.getElementById('luan-que-chu').innerText = `Quẻ Phong Thủy Hoán mang ý nghĩa là "Sự ly tán, giải tán hoặc lan tỏa". Tượng trưng cho gió thổi trên mặt nước tạo ra các con sóng lan tỏa đi xa. Quẻ này chỉ ra rằng các rào cản, mâu thuẫn hay bế tắc đang bắt đầu tan biến. Trong công việc và sự nghiệp, đây là thời điểm phù hợp để giải quyết hiểu lầm, cải tổ bộ máy, thay đổi phương pháp cũ kỹ hoặc mở rộng quy mô hợp tác ra bên ngoài.`;
+            
+            document.getElementById('luan-que-bien').innerText = `Quẻ Biến là Thiên Thủy Tụng có nghĩa là "Tranh tụng, bàn cãi, bất đồng ý kiến". Khi Phong Thủy Hoán động hào 4 biến sang Thiên Thủy Tụng, báo hiệu sự dịch chuyển từ việc tháo gỡ bế tắc sang việc phát sinh những tranh chấp, bất hòa hoặc đối lập về lợi ích. Cần phải chú ý các thủ tục pháp lý, giấy tờ, hợp đồng và cẩn trọng lời ăn tiếng nói.`;
+
+            document.getElementById('luan-chi-tiet-linh-vuc').innerHTML = `
+                <div class="bg-white p-3 rounded border border-[#e5dac1]">
+                    <div class="font-bold text-[#b31b1b] mb-1"><i class="fas fa-briefcase"></i> Công danh - Tài lộc</div>
+                    <p class="text-xs text-gray-600 leading-relaxed">Cơ hội thăng tiến và kiếm tiền đang mở ra nhờ các mối quan hệ xã giao rộng rãi. Cần lập hợp đồng rành mạch từ đầu để tránh tranh chấp.</p>
+                </div>
+                <div class="bg-white p-3 rounded border border-[#e5dac1]">
+                    <div class="font-bold text-emerald-700 mb-1"><i class="fas fa-heart"></i> Tình duyên - Gia đạo</div>
+                    <p class="text-xs text-gray-600 leading-relaxed">Vướng mắc hay hiểu lầm trong gia đạo sẽ được tháo gỡ. Cần lắng nghe đối phương nhiều hơn, tránh cái tôi quá lớn dẫn đến cự cãi.</p>
+                </div>
+                <div class="bg-white p-3 rounded border border-[#e5dac1]">
+                    <div class="font-bold text-blue-700 mb-1"><i class="fas fa-shield-alt"></i> Sức khỏe - Di chuyển</div>
+                    <p class="text-xs text-gray-600 leading-relaxed">Chú ý các bệnh liên quan đến hệ tiêu hóa. Di chuyển xa thuận lợi và gặp được quý nhân trợ giúp trên đường.</p>
+                </div>
+            `;
+
+            const resultWrapper = document.getElementById('result-wrapper');
+            resultWrapper.classList.remove('hidden');
+            resultWrapper.classList.add('flex');
+            resultWrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function taiAnh() {
+            const captureArea = document.getElementById('que-capture-area');
+            const statusText = document.getElementById('download-status');
+            statusText.classList.remove('hidden');
+            
+            html2canvas(captureArea, {
+                scale: 2.2,
+                useCORS: true,
+                backgroundColor: '#fdfbf5',
+                logging: false
+            }).then(canvas => {
+                statusText.classList.add('hidden');
+                const link = document.createElement('a');
+                link.download = 'Que_Dich_Mai_Hoa_Luchao.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(err => {
+                console.error(err);
+                alert("Đã xảy ra lỗi khi tạo ảnh. Vui lòng thử lại!");
+                statusText.classList.add('hidden');
+            });
+        }
+    </script>
+</body>
+</html>
+
+
+```
