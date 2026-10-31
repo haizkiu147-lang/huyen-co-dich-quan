@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Phần Mềm Lập & Luận Quẻ Phong Thủy - Tâm Linh - Tình Duyên</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+​<!-- React & Babel -->
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+​<!-- Thư viện phụ trợ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://unpkg.com/lunar-javascript/lunar.js"></script>
+​<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Quicksand:wght@300..500..700&family=Dancing+Script:wght@700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&display=swap');
+​body { font-family: 'Quicksand', sans-serif; background-color: #f5f0e1; margin: 0; padding: 0; }
+.serif-title { font-family: 'Playfair Display', serif; }
+.signature-font { font-family: 'Dancing Script', cursive; }
+.document-text { font-family: 'Merriweather', serif; line-height: 1.6; }
+​.export-container { width: 100%; display: flex; justify-content: center; }
+​.la-que-bg {
+background-color: #fdfaf2;
+background-image: radial-gradient(#faf4df 1px, transparent 0), radial-gradient(#faf4df 1px, transparent 0);
+background-size: 8px 8px; background-position: 0 0, 4px 4px;
+border: 1px solid #d4af37;
+width: 100%;
+max-width: 580px;
+box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+margin: 0 auto;
+}
+​::-webkit-scrollbar { height: 6px; width: 6px; }
+::-webkit-scrollbar-track { background: transparent; border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+​.rainbow-text {
+background: linear-gradient(to right, #ff0000, #ff7f00, #b2a800, #009900, #0000ff, #4b0082, #8b00ff);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+animation: rainbowAnimation 6s linear infinite;
+background-size: 400% 400%;
+}
+@keyframes rainbowAnimation { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+​.export-mode .no-print { display: none !important; }
+.export-mode { box-shadow: none !important; border: none !important; }
+​.dense-table { border: 1px solid #e5d3b3; border-collapse: collapse; }
+.dense-table th, .dense-table td { border: none; padding: 4px 2px; text-align: center; }
+.dense-table thead th { background-color: #f4ebd0; color: #785a28; border-bottom: 1px solid #e5d3b3; padding: 5px 2px; }
+​.hao-dong-highlight { background-color: rgba(239, 68, 68, 0.1); border-left: 2px solid #ef4444; }
+</style>
+</head>
+<body class="text-gray-800">
+​<div id="root"></div>
+​<script type="text/babel">
+// === CƠ SỞ DỮ LIỆU PHONG THỦY & KINH DỊCH ===
+const CAN_NGU_HANH = { 'Giáp': 'Mộc', 'Ất': 'Mộc', 'Bính': 'Hỏa', 'Đinh': 'Hỏa', 'Mậu': 'Thổ', 'Kỷ': 'Thổ', 'Canh': 'Kim', 'Tân': 'Kim', 'Nhâm': 'Thủy', 'Quý': 'Thủy' };
+const CHI_NGU_HANH = { 'Tý': 'Thủy', 'Hợi': 'Thủy', 'Dần': 'Mộc', 'Mão': 'Mộc', 'Tỵ': 'Hỏa', 'Ngọ': 'Hỏa', 'Sửu': 'Thổ', 'Thìn': 'Thổ', 'Mùi': 'Thổ', 'Tuất': 'Thổ', 'Thân': 'Kim', 'Dậu': 'Kim' };
+​const ELEMENTS_RELATION = {
+'Kim': { sinh: 'Thủy', khac: 'Mộc', dong: 'Kim' },
+'Thủy': { sinh: 'Mộc', khac: 'Hỏa', dong: 'Thủy' },
+'Mộc': { sinh: 'Hỏa', khac: 'Thổ', dong: 'Mộc' },
+'Hỏa': { sinh: 'Thổ', khac: 'Kim', dong: 'Hỏa' },
+'Thổ': { sinh: 'Kim', khac: 'Thủy', dong: 'Thổ' }
+};
+​const TR_SINH_MAP = {
+"Mộc": { "Hợi": "T.Sinh", "Tý": "M.Dục", "Sửu": "Q.Đới", "Dần": "L.Quan", "Mão": "Đ.Vượng", "Thìn": "Suy", "Tỵ": "Bệnh", "Ngọ": "Tử", "Mùi": "Mộ", "Thân": "Tuyệt", "Dậu": "Thai", "Tuất": "Dưỡng" },
+"Hỏa": { "Dần": "T.Sinh", "Mão": "M.Dục", "Thìn": "Q.Đới", "Tỵ": "L.Quan", "Ngọ": "Đ.Vượng", "Mùi": "Suy", "Thân": "Bệnh", "Dậu": "Tử", "Tuất": "Mộ", "Hợi": "Tuyệt", "Tý": "Thai", "Sửu": "Dưỡng" },
+"Thổ": { "Thân": "T.Sinh", "Dậu": "M.Dục", "Tuất": "Q.Đới", "Hợi": "L.Quan", "Tý": "Đ.Vượng", "Sửu": "Suy", "Dần": "Bệnh", "Mão": "Tử", "Thìn": "Mộ", "Tỵ": "Tuyệt", "Ngọ": "Thai", "Mùi": "Dưỡng" },
+"Kim": { "Tỵ": "T.Sinh", "Ngọ": "M.Dục", "Mùi": "Q.Đới", "Thân": "L.Quan", "Dậu": "Đ.Vượng", "Tuất": "Suy", "Hợi": "Bệnh", "Tý": "Tử", "Sửu": "Mộ", "Dần": "Tuyệt", "Mão": "Thai", "Thìn": "Dưỡng" },
+"Thủy": { "Thân": "T.Sinh", "Dậu": "M.Dục", "Tuất": "Q.Đới", "Hợi": "L.Quan", "Tý": "Đ.Vượng", "Sửu": "Suy", "Dần": "Bệnh", "Mão": "Tử", "Thìn": "Mộ", "Tỵ": "Tuyệt", "Ngọ": "Thai", "Mùi": "Dưỡng" }
+};
+​const DIA_CHI_XUNG = {'Tý':'Ngọ', 'Ngọ':'Tý', 'Sửu':'Mùi', 'Mùi':'Sửu', 'Dần':'Thân', 'Thân':'Dần', 'Mão':'Dậu', 'Dậu':'Mão', 'Thìn':'Tuất', 'Tuất':'Thìn', 'Tỵ':'Hợi', 'Hợi':'Tỵ'};
+​const BAT_QUAI = [
+{ id: 0, name: 'Càn', symbol: '☰', binary: [1, 1, 1], element: 'Kim', number: 1 },
+{ id: 1, name: 'Đoài', symbol: '☱', binary: [1, 1, 0], element: 'Kim', number: 2 },
+{ id: 2, name: 'Ly', symbol: '☲', binary: [1, 0, 1], element: 'Hỏa', number: 3 },
+{ id: 3, name: 'Chấn', symbol: '☳', binary: [1, 0, 0], element: 'Mộc', number: 4 },
+{ id: 4, name: 'Tốn', symbol: '☴', binary: [0, 1, 1], element: 'Mộc', number: 5 },
+{ id: 5, name: 'Khảm', symbol: '☵', binary: [0, 1, 0], element: 'Thủy', number: 6 },
+{ id: 6, name: 'Cấn', symbol: '☶', binary: [0, 0, 1], element: 'Thổ', number: 7 },
+{ id: 7, name: 'Khôn', symbol: '☷', binary: [0, 0, 0], element: 'Thổ', number: 8 }
+];
+​const findTrigramFromBinary = (binArr) => {
+const t = BAT_QUAI.find(b => b.binary[0] === binArr[0] && b.binary[1] === binArr[1] && b.binary[2] === binArr[2]);
+return t ? t.id : 0;
+};
+​const THIEN_CAN = ['Giáp', 'Ất', 'Bính', 'Đinh', 'Mậu', 'Kỷ', 'Canh', 'Tân', 'Nhâm', 'Quý'];
+const DIA_CHI = ['Tý', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tỵ', 'Ngọ', 'Mùi', 'Thân', 'Dậu', 'Tuất', 'Hợi'];
+const TIET_KHI_LIST = ['Lập Xuân', 'Vũ Thủy', 'Kinh Trập', 'Xuân Phân', 'Thanh Minh', 'Cốc Vũ', 'Lập Hạ', 'Tiểu Mãn', 'Mang Chủng', 'Hạ Chí', 'Tiểu Thử', 'Đại Thử', 'Lập Thu', 'Xử Thử', 'Bạch Lộ', 'Thu Phân', 'Hàn Lộ', 'Sương Giáng', 'Lập Đông', 'Tiểu Tuyết', 'Đại Tuyết', 'Đông Chí', 'Tiểu Hàn', 'Đại Hàn', 'Không dùng/Khác'];
+​const NAP_GIAP = {
+0: { noi: ['Giáp Tý', 'Giáp Dần', 'Giáp Thìn'], ngoai: ['Nhâm Ngọ', 'Nhâm Thân', 'Nhâm Tuất'] },
+1: { noi: ['Đinh Tỵ', 'Đinh Mão', 'Đinh Sửu'], ngoai: ['Đinh Hợi', 'Đinh Dậu', 'Đinh Mùi'] },
+2: { noi: ['Kỷ Mão', 'Kỷ Sửu', 'Kỷ Hợi'], ngoai: ['Kỷ Dậu', 'Kỷ Mùi', 'Kỷ Tỵ'] },
+3: { noi: ['Canh Tý', 'Canh Dần', 'Canh Thìn'], ngoai: ['Canh Ngọ', 'Canh Thân', 'Canh Tuất'] },
+4: { noi: ['Tân Sửu', 'Tân Hợi', 'Tân Dậu'], ngoai: ['Tân Mùi', 'Tân Tỵ', 'Tân Mão'] },
+5: { noi: ['Mậu Dần', 'Mậu Thìn', 'Mậu Ngọ'], ngoai: ['Mậu Thân', 'Mậu Tuất', 'Mậu Tý'] },
+6: { noi: ['Bính Thìn', 'Bính Ngọ', 'Bính Thân'], ngoai: ['Bính Tuất', 'Bính Tý', 'Bính Dần'] },
+7: { noi: ['Ất Mùi', 'Ất Tỵ', 'Ất Mão'], ngoai: ['Quý Sửu', 'Quý Hợi', 'Quý Dậu'] }
+};
+​const LUC_THU_KHOI = { 'Giáp': 0, 'Ất': 0, 'Bính': 1, 'Đinh': 1, 'Mậu': 2, 'Kỷ': 3, 'Canh': 4, 'Tân': 4, 'Nhâm': 5, 'Quý': 5 };
+const LUC_THU_LIST = ['Thanh Long', 'Chu Tước', 'Câu Trần', 'Đằng Xà', 'Bạch Hổ', 'Huyền Vũ'];
+​const HEXAGRAM_DATABASE = {
+"0_0": ["Thuần Càn", "Càn", 6, "HẠN MIÊU ĐẮC VŨ", ["Bát Thuần", "Lục Xung"]],
+"0_1": ["Thiên Trạch Lý", "Cấn", 5, "HỔ KHẨU THỰC CAM", []],
+"0_2": ["Thiên Hỏa Đồng Nhân", "Ly", 3, "TIÊN KHÓA HẬU HỶ", []],
+"0_3": ["Thiên Lôi Vô Vọng", "Tốn", 4, "VÔ VỌNG CHI TAI", ["Lục Xung"]],
+"0_4": ["Thiên Phong Cấu", "Càn", 1, "NHƯ DIỆP ĐIÊU LINH", []],
+"0_5": ["Thiên Thủy Tụng", "Ly", 4, "TIỂU NHÂN HÃM HẠI", []],
+"0_6": ["Thiên Sơn Độn", "Càn", 2, "NÙNG VÂN GIÀ LỘ", []],
+"0_7": ["Thiên Địa Bĩ", "Càn", 3, "HỔ LẠC HÃM TỈNH", ["Lục Hợp"]],
+"1_0": ["Trạch Thiên Quải", "Khôn", 5, "NƯỚC TRÀN BỜ ĐÊ", []],
+"1_1": ["Thuần Đoài", "Đoài", 6, "LƯỠNG HỶ TRÙNG PHÙNG", ["Bát Thuần", "Lục Xung"]],
+"1_2": ["Trạch Hỏa Cách", "Khảm", 4, "HẠN MIÊU ĐẮC VŨ", []],
+"1_3": ["Trạch Lôi Tùy", "Chấn", 3, "SUY ĐỒ ĐẮC KIM", ["Quy Hồn"]],
+"1_4": ["Trạch Phong Đại Quá", "Chấn", 4, "CỘT NHÀ LUNG LAY", ["Du Hồn"]],
+"1_5": ["Trạch Thủy Khốn", "Đoài", 1, "NGHÈO KHÓ GIAN NAN", ["Lục Hợp"]],
+"1_6": ["Trạch Sơn Hàm", "Đoài", 3, "HỶ KHÍ LÂM MÔN", []],
+"1_7": ["Trạch Địa Tụy", "Đoài", 2, "BỒN KHÁNH HỶ SỰ", []],
+"2_0": ["Hỏa Thiên Đại Hữu", "Càn", 3, "QUY HỒN THU HOẠCH", ["Quy Hồn"]],
+"2_1": ["Hỏa Trạch Khuê", "Cấn", 4, "LY TÁN BẤT ĐỒNG", []],
+"2_2": ["Thuần Ly", "Ly", 6, "TIÊN KHÓA HẬU DỄ", ["Bát Thuần", "Lục Xung"]],
+"2_3": ["Hỏa Lôi Phệ Hạp", "Tốn", 5, "XUÂN LỘC ANH ĐÀO", []],
+"2_4": ["Hỏa Phong Đỉnh", "Ly", 2, "CÚC HOA TOÀN THỊNH", []],
+"2_5": ["Hỏa Thủy Vị Tế", "Ly", 3, "TIỂU NHÂN HÃM HẠI", []],
+"2_6": ["Hỏa Sơn Lữ", "Ly", 1, "SƠN DÃ KÝ KHÁCH", ["Lục Hợp"]],
+"2_7": ["Hỏa Địa Tấn", "Càn", 4, "DU HỒN THĂNG TIẾN", ["Du Hồn"]],
+"3_0": ["Lôi Thiên Đại Tráng", "Khôn", 4, "UY TRẤN GIANG SƠN", ["Lục Xung"]],
+"3_1": ["Lôi Trạch Quy Muội", "Đoài", 3, "QUY MUỘI SAI LẦM", ["Quy Hồn"]],
+"3_2": ["Lôi Hỏa Phong", "Khảm", 5, "CỔ NHÂN KIẾN ĐÍCH", []],
+"3_3": ["Thuần Chấn", "Chấn", 6, "HOÀNG LONG ĐỘC BỘ", ["Bát Thuần", "Lục Xung"]],
+"3_4": ["Lôi Phong Hằng", "Chấn", 3, "TIÊN PHÁT CHẾ NHÂN", []],
+"3_5": ["Lôi Thủy Giải", "Chấn", 2, "NGŨ LỘ THÔNG THƯƠNG", []],
+"3_6": ["Lôi Sơn Tiểu Quá", "Đoài", 4, "PHI ĐIỂU DI ÂM", ["Du Hồn"]],
+"3_7": ["Lôi Địa Dự", "Chấn", 1, "HOAN HỶ ĐẮC THỜI", ["Lục Hợp"]],
+"4_0": ["Phong Thiên Tiểu Súc", "Tốn", 1, "MẬT VÂN BẤT VŨ", []],
+"4_1": ["Phong Trạch Trung Phu", "Cấn", 4, "HẠN LỘ PHÙNG CAM", ["Du Hồn"]],
+"4_2": ["Phong Hỏa Gia Nhân", "Tốn", 2, "XUÂN GIÓ ẤM ÁP", []],
+"4_3": ["Phong Lôi Ích", "Tốn", 3, "XUÂN PHONG ĐẮC Ý", []],
+"4_4": ["Thuần Tốn", "Tốn", 6, "GIÓ ĐÔNG THỔI NHẸ", ["Bát Thuần", "Lục Xung"]],
+"4_5": ["Phong Thủy Hoán", "Ly", 5, "MƯA PHÙN TAN BĂNG", []],
+"4_6": ["Phong Sơn Tiệm", "Cấn", 3, "HẠN LỘ PHÙNG CAM", ["Quy Hồn"]],
+"4_7": ["Phong Địa Quan", "Càn", 4, "HẠN BỒNG PHÙNG HẠC", []],
+"5_0": ["Thủy Thiên Nhu", "Khôn", 4, "MINH VÂN ĐỘC QUY", ["Du Hồn"]],
+"5_1": ["Thủy Trạch Tiết", "Khảm", 1, "KHỔ TÂM ĐẮC LỘC", ["Lục Hợp"]],
+"5_2": ["Thủy Hỏa Ký Tế", "Khảm", 3, "CÔNG THÀNH DANH TOẠI", []],
+"5_3": ["Thủy Lôi Truân", "Khảm", 2, "MÃ ĐÁO KHỞI TRÌNH", []],
+"5_4": ["Thủy Phong Tỉnh", "Chấn", 5, "GIẾNG KHÔ GẶP MƯA", []],
+"5_5": ["Thuần Khảm", "Khảm", 6, "XUYÊN TRUNG ĐẮC NGỌC", ["Bát Thuần", "Lục Xung"]],
+"5_6": ["Thủy Sơn Kiển", "Đoài", 4, "TẠO HÓA THỬ LÒNG", []],
+"5_7": ["Thủy Địa Tỷ", "Khôn", 3, "ĐỊA THỦY GIAO BAN", ["Quy Hồn"]],
+"6_0": ["Sơn Thiên Đại Súc", "Cấn", 2, "TÍCH LŨY THÀNH ĐẠI", []],
+"6_1": ["Sơn Trạch Tổn", "Cấn", 3, "HẠN KHÔ PHÙNG LỘC", []],
+"6_2": ["Sơn Hỏa Bí", "Cấn", 1, "HỶ KHÍ LÂM MÔN", ["Lục Hợp"]],
+"6_3": ["Sơn Lôi Di", "Tốn", 4, "DI HÌNH HOÁN CỐT", ["Du Hồn"]],
+"6_4": ["Sơn Phong Cổ", "Tốn", 3, "SỬA SAI PHỤC HƯNG", ["Quy Hồn"]],
+"6_5": ["Sơn Thủy Mông", "Ly", 4, "SƯƠNG MÙ CHE TRĂNG", []],
+"6_6": ["Thuần Cấn", "Cấn", 6, "SƠN CAO LỘC TRÚC", ["Bát Thuần", "Lục Xung"]],
+"6_7": ["Sơn Địa Bác", "Càn", 5, "OANH THỬ LẠC ĐÊ", []],
+"7_0": ["Địa Thiên Thái", "Khôn", 3, "TAM DƯƠNG KHAI THÁI", ["Lục Hợp"]],
+"7_1": ["Địa Trạch Lâm", "Khôn", 2, "HỶ SỰ LÂM MÔN", []],
+"7_2": ["Địa Hỏa Minh Di", "Khảm", 4, "KÍNH LÝ TÀNG HOA", ["Du Hồn"]],
+"7_3": ["Địa Lôi Phục", "Khôn", 1, "XUÂN ĐÔNG QUY LAI", ["Lục Hợp"]],
+"7_4": ["Địa Phong Thăng", "Chấn", 4, "BƯỚC LÊN MÂY XANH", []],
+"7_5": ["Địa Thủy Sư", "Khảm", 3, "XUÂN ĐIỂU XUẤT CỐC", ["Quy Hồn"]],
+"7_6": ["Địa Sơn Khiêm", "Đoài", 5, "MÃN VI TỔN, KHIÊM THỤ ÍCH", []],
+"7_7": ["Thuần Khôn", "Khôn", 6, "ĐỊA THỪA VẠN VẬT", ["Bát Thuần", "Lục Xung"]]
+};
+​// BẢNG HÀO TỪ KINHDỊCH NGUYÊN BẢN CHO TỪNG QUẺ CHUẨN XÁC
+const HAO_TU_SPECIFIC = {
+"Thuần Càn": [
+{ han: "潜龙勿用", vi: "Tiềm long vật dụng.", dich: "Rồng ẩn dưới nước, chưa nên hành động hay mưu việc lớn." },
+{ han: "见龙在田，利见大人", vi: "Hiến long tại điền, lợi hiến đại nhân.", dich: "Rồng xuất hiện ở cánh đồng, lợi cho việc gặp bậc đại nhân." },
+{ han: "君子终日乾乾，夕惕若厉，无咎", vi: "Quân tử chung nhật kiên kiên, tịch dịch nhược lệ, vô cữu.", dich: "Người quân tử suốt ngày cẩn thận giữ mình, tối đến vẫn lo sợ, nguy hiểm nhưng không lỗi." },
+{ han: "或跃在渊，无咎", vi: "Hoặc dược tại uyên, vô cữu.", dich: "Nhảy vút lên hoặc tạm ẩn dưới vực sâu, tùy thời ứng biến thì không lỗi." },
+{ han: "飞龙在天，利见大人", vi: "Phi long tại thiên, lợi hiến đại nhân.", dich: "Rồng bay trên trời, thời kỳ cực thịnh, lợi cho việc gặp kẻ đại nhân." },
+{ han: "亢龙有悔", vi: "Kháng long hữu hối.", dich: "Rồng bay lên quá cao tất sinh ăn ăn hối tiếc." }
+],
+"Thuần Khôn": [
+{ han: "履霜，坚冰至", vi: "Lý sương, kiên băng chí.", dich: "Dẫm lên sương mỏng, biết rằng băng dày mùa đông đang tới." },
+{ han: "直方大，不习无不利", vi: "Trực phương đại, bất tập vô bất lợi.", dich: "Thẳng thắn, vuông vắn, rộng lớn; chẳng cần học tập mà vẫn không gì bất lợi." },
+{ han: "含章可贞，或从王事，无成有终", vi: "Hàm chương khả trinh, hoặc tòng vương sự, vô thành hữu chung.", dich: "Ngậm giấu tài năng mà giữ nết trinh, giúp việc vương công không tranh công nhưng kết thúc có hậu." },
+{ han: "括囊，无咎无誉", vi: "Khoát nang, vô cữu vô dự.", dich: "Thắt chặt miệng túi lại, giữ mình kín kẽ thì không lỗi cũng không được khen." },
+{ han: "黄裳元吉", vi: "Hoàng xiêm nguyên cát.", dich: "Mặc xiêm màu vàng rực rỡ, điềm rất tốt lành." },
+{ han: "龙战于野，其血玄黄", vi: "Long chiến vu dã, kỳ huyết huyền hoàng.", dich: "Rồng tranh đấu nơi đồng nội, máu chảy ra màu đen màu vàng bi thảm." }
+],
+"Thủy Lôi Truân": [
+{ han: "磐桓，利居贞，利建侯", vi: "Bàn hoàn, lợi cư trinh, lợi kiến hầu.", dich: "Dừng lại xem xét, giữ vững trinh chính thì có lợi, nên dựng xây cơ sở." },
+{ han: "屯如邅如，乘马班如，匪寇婚媾", vi: "Truân như chiền như, thừa mã ban như, phỉ khấu hôn cấu.", dich: "Gian nan trở ngại, cưỡi ngựa ngập ngừng, không phải đến cướp mà đến cầu hôn." },
+{ han: "即鹿无虞，惟入于林中，君子几不如舍", vi: "Tức lộc vô ngu, duy nhập vu lâm trung, quân tử kỷ bất như xá.", dich: "Săn hươu không có người dẫn đường, đi vào rừng sâu, người quân tử nên bỏ đi." },
+{ han: "乘马班如，求婚媾，往吉，无不利", vi: "Thừa mã ban như, cầu hôn cấu, vãng cát, vô bất lợi.", dich: "Cưỡi ngựa ngập ngừng, tìm người kết hôn, tiến đi thì tốt, không gì không lợi." },
+{ han: "屯其膏，小贞吉，大贞凶", vi: "Truân kỳ cao, tiểu trinh cát, đại trinh hung.", dich: "Tích tụ ân huệ, việc nhỏ trinh chính thì tốt, việc lớn cứng nhắc thì nguy." },
+{ han: "乘马班如，泣血涟涟", vi: "Thừa mã ban như, khấp huyết liên liên.", dich: "Cưỡi ngựa ngập ngừng, khóc lóc giọt lệ máu đầm đìa." }
+],
+"Sơn Thủy Mông": [
+{ han: "发蒙，利用刑人，用脱桎梏", vi: "Phát mông, lợi dụng hình nhân, dụng thoát trất cốc.", dich: "Khai mở sự mờ mịt, dùng kỷ luật để rèn luyện, cởi bỏ xiềng xông." },
+{ han: "包蒙吉；纳妇吉；子克家", vi: "Bao mông cát; nạp phụ cát; tử khắc gia.", dich: "Bao dung kẻ ngây thơ thì tốt; lấy được vợ tốt; con gánh vác được việc nhà." },
+{ han: "勿用取女，见金夫，不有躬，无攸利", vi: "Vật dụng thủ nữ, kiến kim phu, bất hữu cung, vô du lợi.", dich: "Đừng cưới người phụ nữ thấy kẻ nhiều tiền bèn mất nết, không lợi gì." },
+{ han: "困蒙，吝", vi: "Khốn mông, lận.", dich: "Bị vây trong mờ mịt ngây thơ, đáng tiếc hối." },
+{ han: "童蒙，吉", vi: "Đồng mông, cát.", dich: "Trẻ ngây thơ biết lắng nghe học hỏi, tốt lành." },
+{ han: "击蒙，不利为寇，利御寇", vi: "Kích mông, bất lợi vi khấu, lợi ngự khấu.", dich: "Đánh kẻ mờ mịt bướng bỉnh, chống giặc thì tốt, làm giặc thì xấu." }
+],
+"Địa Lôi Phục": [
+{ han: "不远复，无祇悔，元吉", vi: "Bất viễn phục, vô kì hối, nguyên cát.", dich: "Tuy lầm lỗi nhưng thời gian chẳng xa, trở lại tốt lành ngay thì không đến nỗi ăn ăn lớn; rất tốt." },
+{ han: "休复，吉", vi: "Hưu phục, cát.", dich: "Vui vẻ trở lại đạo chính, tốt." },
+{ han: "频复，厉无咎", vi: "Tần phục, lệ vô cữu.", dich: "Nhiều lần lầm lỗi rồi quay lại, tuy nguy nhưng biết sửa đổi thì không lỗi." },
+{ han: "中行独复", vi: "Trung hành độc phục.", dich: "Đi giữa hàng ngũ nhưng một mình biết quay lại đạo chính." },
+{ han: "敦复，无悔", vi: "Đôn phục, vô hối.", dich: "Thành tâm và đốc thúc trở lại đạo chính, không có gì hối tiếc." },
+{ han: "迷复，凶，有灾眚。用行师，终有大败", vi: "Mê phục, hung, hữu tai sảnh. Dụng hành sư, chung hữu đại bại.", dich: "Mê muội không chịu trở lại, nguy hiểm, có thiên tai nhân họa. Dùng quân đánh trận ắt đại bại." }
+],
+"Lôi Thiên Đại Tráng": [
+{ han: "壮于趾，征凶，有孚", vi: "Tráng vu chỉ, chinh hung, hữu phu.", dich: "Sức mạnh mới ở ngón chân, vội tiến đi thì hung nguy, phải có lòng tin kìm hãm." },
+{ han: "贞吉", vi: "Trinh cát.", dich: "Giữ điều chính đắc trung thì tốt lành." },
+{ han: "小人用壮，君子用罔，贞厉。羝羊触藩，赢其角", vi: "Tiểu nhân dụng tráng, quân tử dụng võng, trinh lệ. Đê dương xúc phiên, doanh kỳ giác.", dich: "Tiểu nhân dùng cậy sức, quân tử biết coi như không. Dê đực húc dậu bị mắc kẹt sừng." },
+{ han: "贞吉，悔亡。藩决不赢，壮于大舆之輹", vi: "Trinh cát, hối vong. Phiên quyết bất doanh, tráng vu đại dư chi phúc.", dich: "Trinh chính tốt, ăn ăn mất. Hàng rào rách không kẹt sừng nữa, trục xe lớn cứng cáp tiến đi." },
+{ han: "丧羊于易，无悔", vi: "Táng dương vu dị, vô hối.", dich: "Dễ dàng làm mất tính húc càn của dê đực, không có gì ăn ăn." },
+{ han: "羝羊触藩，不能退，不能遂，无攸利，艰则吉", vi: "Đê dương xúc phiên, bất năng thoái, bất năng toại, vô du lợi, gian tắc cát.", dich: "Dê húc dậu dính sừng, không lùi được cũng chẳng tiến được, chẳng lợi gì, biết gian nan chịu đựng thì tốt." }
+],
+"Phong Hỏa Gia Nhân": [
+{ han: "闲有家，悔亡", vi: "Nhàn hữu gia, hối vong.", dich: "Phòng ngừa ngay từ khi mới có nhà thì không hối hận gì cả." },
+{ han: "无攸遂，在中馈，贞吉", vi: "Vô du toại, tại trung quỹ, trinh cát.", dich: "Không có ý chí cầu tiến riêng, lo việc bếp núc trong nhà, giữ trinh chính thì tốt." },
+{ han: "家人婨婨，悔厉吉；妇子嘻嘻，终吝", vi: "Gia nhân nghiêm nghiêm, hối lệ cát; phụ tử hỷ hỷ, chung lận.", dich: "Người trong nhà nghiêm chỉnh răn cạch, tuy nghiêm khắc nhưng tốt; phụ nữ con trẻ cười giỡn cợt nhả, cuối cùng hối tiếc." },
+{ han: "富家，大吉", vi: "Phú gia, đại cát.", dich: "Làm cho nhà giàu có, rất tốt lành." },
+{ han: "王假有家，勿恤，吉", vi: "Vương cách hữu gia, vật tuất, cát.", dich: "Vua đến nhà để cảm hóa, không phải lo lắng gì, tốt lành." },
+{ han: "有孚威如，终吉", vi: "Hữu phu uy nhược, chung cát.", dich: "Có lòng thành tín lại có uy phong nghiêm nghị, cuối cùng tốt lành." }
+],
+"Thủy Sơn Kiển": [
+{ han: "往蹇来誉", vi: "Vãng kiển lai dự.", dich: "Tiến đi thì gặp trở ngại gian nan, lui lại thì được khen ngợi." },
+{ han: "王臣蹇蹇，匪躬之故", vi: "Vương thần kiển kiển, phỉ cung chi cố.", dich: "Bề tôi gặp muôn vàn gian nan, không phải vì tai họa cá nhân mà vì gánh vác việc nước." },
+{ han: "往蹇来反", vi: "Vãng kiển lai phản.", dich: "Tiến đi thì vấp phải gian hiểm, trở lại với đồng minh mới là phải." },
+{ han: "往蹇来连", vi: "Vãng kiển lai liên.", dich: "Tiến đi thì trắc trở, trở lại thì kết liên với các hào khác cùng hợp lực." },
+{ han: "大蹇朋来", vi: "Đại kiển bằng lai.", dich: "Gian nan lớn lao đến cực điểm, nhưng có bạn bè quý nhân tới tương trợ." },
+{ han: "往蹇来硕，吉，利见大人", vi: "Vãng kiển lai thạc, cát, lợi hiến đại nhân.", dich: "Tiến đi thì trắc trở, lùi lại thì thành công to lớn; tốt lành, lợi cho việc gặp đại nhân." }
+],
+"Hỏa Thủy Vị Tế": [
+{ han: "濡其尾，吝", vi: "Nhu kỳ vĩ, lận.", dich: "Cáo qua sông bị ướt đuôi, hổ thẹn đáng tiếc." },
+{ han: "曳其轮，贞吉", vi: "Duệ kỳ luân, trinh cát.", dich: "Hãm phanh xe lại, giữ trinh chính thì tốt." },
+{ han: "未济，征凶，利涉大川", vi: "Vị tế, chinh hung, lợi thiệp đại xuyên.", dich: "Chưa xong việc, vội tiến đi thì nguy, lội qua sông lớn thì lợi." },
+{ han: "贞吉，悔亡，震用伐鬼方，三年有赏于大国", vi: "Trinh cát, hối vong, chấn dụng phạt Quỷ Phương, tam niên hữu thưởng vu đại quốc.", dich: "Giữ trinh chính tốt, ăn ăn mất, uy dũng đánh Quỷ Phương, ba năm được thưởng." },
+{ han: "贞吉，无悔，君子之光，有孚，吉", vi: "Trinh cát, vô hối, quân tử chi quang, hữu phu, cát.", dich: "Trinh chính tốt, không hối tiếc, ánh sáng quân tử tỏa rạng, lòng thành được quy phục." },
+{ han: "有孚于饮酒，无咎，濡其首，有孚失是", vi: "Hữu phu vu ẩm tửu, vô cữu, nhu kỳ thủ, hữu phu thất thị.", dich: "Vui mừng uống rượu không lỗi, nhưng uống say ướt đầu thì mất nết chính." }
+],
+"Phong Sơn Tiệm": [
+{ han: "鸿渐于干，小子厉，有言，无咎", vi: "Hồng tiệm vu can, tiểu tử lệ, hữu ngôn, vô cữu.", dich: "Chim hồng tiến tới bờ bãi, người nhỏ lo sợ, có lời chê trách nhưng không lỗi." },
+{ han: "鸿渐于磐，饮食衎衎，吉", vi: "Hồng tiệm vu bàn, ẩm thực khản khản, cát.", dich: "Chim hồng tiến tới đá lớn, ăn uống vui vẻ khản khản, tốt lành." },
+{ han: "鸿渐于陆，夫征不复，妇孕不育，凶", vi: "Hồng tiệm vu lục, phu chinh bất phục, phụ dựng bất dục, hung.", dich: "Chim hồng tiến tới đất bằng, chồng đi không về, vợ mang thai không nuôi, nguy hiểm." },
+{ han: "鸿渐于木，或得其榱，无咎", vi: "Hồng tiệm vu mộc, hoặc đắc kỳ sương, vô cữu.", dich: "Chim hồng tiến đậu cành cây, đỗ được cành bằng phẳng thì không lỗi." },
+{ han: "鸿渐于陵，妇三岁不孕，终莫之胜，吉", vi: "Hồng tiệm vu lăng, phụ tam tuế bất dựng, chung mạc chi thắng, cát.", dich: "Chim hồng tiến tới gò cao, vợ ba năm không mang thai nhưng cuối cùng không ai cản được, tốt." },
+{ han: "鸿渐于陆，其羽可用为仪，吉", vi: "Hồng tiệm vu lục, kỳ vũ khả dụng vi nghi, cát.", dich: "Chim hồng tiến lên mây cao, lông vũ dùng làm nghi lễ, rất tốt lành." }
+]
+};
+​const CUNG_ELEMENTS = { "Càn": "Kim", "Đoài": "Kim", "Ly": "Hỏa", "Chấn": "Mộc", "Tốn": "Mộc", "Khảm": "Thủy", "Cấn": "Thổ", "Khôn": "Thổ" };
+​const layThandSatTKhong = (dayCan, dayChi, chiName) => {
+let tkList = [];
+const dayCanChi = dayCan + " " + dayChi;
+if (["Giáp Tý", "Ất Sửu", "Bính Dần", "Đinh Mão", "Mậu Thìn", "Kỷ Tỵ", "Canh Ngọ", "Tân Mùi", "Nhâm Thân", "Quý Dậu"].includes(dayCanChi)) tkList = ["Tuất", "Hợi"];
+else if (["Giáp Tuất", "Ất Hợi", "Bính Tý", "Đinh Sửu", "Mậu Dần", "Kỷ Mão", "Canh Thìn", "Tân Tỵ", "Nhâm Ngọ", "Quý Mùi"].includes(dayCanChi)) tkList = ["Thân", "Dậu"];
+else if (["Giáp Thân", "Ất Dậu", "Bính Tuất", "Đinh Hợi", "Mậu Tý", "Kỷ Sửu", "Canh Dần", "Tân Mão", "Nhâm Thìn", "Quý Tỵ"].includes(dayCanChi)) tkList = ["Ngọ", "Mùi"];
+else if (["Giáp Ngọ", "Ất Mùi", "Bính Thân", "Đinh Dậu", "Mậu Tuất", "Kỷ Hợi", "Canh Tý", "Tân Sửu", "Nhâm Dần", "Quý Mão"].includes(dayCanChi)) tkList = ["Thìn", "Tỵ"];
+else if (["Giáp Thìn", "Ất Tỵ", "Bính Ngọ", "Đinh Mùi", "Mậu Thân", "Kỷ Dậu", "Canh Tuất", "Tân Hợi", "Nhâm Tý", "Quý Sửu"].includes(dayCanChi)) tkList = ["Dần", "Mão"];
+else tkList = ["Tý", "Sửu"];
+return tkList.includes(chiName) ? "K.Vong" : "-";
+};
+​const tinhPhanNgamPhucNgam = (chuLines, bienLines, finalMoving) => {
+let props = []; let hasPhanNgam = false; let hasPhucNgam = false;
+for(let i=0; i<6; i++) {
+if(finalMoving[i]) {
+if (chuLines[i].chi === bienLines[i].chi) hasPhucNgam = true;
+if (DIA_CHI_XUNG[chuLines[i].chi] === bienLines[i].chi) hasPhanNgam = true;
+}
+}
+if (hasPhanNgam) props.push("Phản Ngâm"); if (hasPhucNgam) props.push("Phục Ngâm");
+return props;
+};
+​const getElementColor = (element) => {
+switch(element) {
+case 'Kim': return 'text-[#b8860b]';
+case 'Mộc': return 'text-[#15803d]';
+case 'Thủy': return 'text-[#1d4ed8]';
+case 'Hỏa': return 'text-[#dc2626]';
+case 'Thổ': return 'text-[#8b4513]';
+default: return 'text-gray-800';
+}
+};
+​const getRoleColor = (role) => {
+if (role.includes('THỂ')) return 'text-gray-800';
+if (role.includes('DỤNG')) return 'text-[#dc2626]';
+if (role.includes('BIẾN')) return 'text-[#0284c7]';
+return 'text-gray-600';
+};
+​const getLucThuColor = (lucThu) => {
+switch(lucThu) {
+case 'Thanh Long': return 'text-[#15803d]';
+case 'Chu Tước': return 'text-[#dc2626]';
+case 'Câu Trần': return 'text-[#8b4513]';
+case 'Đằng Xà': return 'text-[#7e22ce]';
+case 'Bạch Hổ': return 'text-[#4b5563]';
+case 'Huyền Vũ': return 'text-[#1d4ed8]';
+default: return 'text-gray-800';
+}
+};
+​const getVuongSuyColor = (vs) => {
+if (["Vượng", "Tướng", "Q.Đới", "L.Quan", "Đ.Vượng"].includes(vs)) return "text-[#dc2626] font-bold";
+if (["Hưu", "Tù", "Tử", "Tuyệt", "Mộ"].includes(vs)) return "text-gray-500 font-medium";
+return "text-[#8b4513] font-bold";
+};
+​const getTruongSinhColor = (ts) => {
+if (["T.Sinh", "Q.Đới", "L.Quan", "Đ.Vượng"].includes(ts)) return "text-[#dc2626] font-bold";
+if (["M.Dục", "Suy", "Thai", "Dưỡng"].includes(ts)) return "text-[#ca8a04] font-semibold";
+if (["Bệnh", "Tử", "Mộ", "Tuyệt"].includes(ts)) return "text-gray-500 font-medium";
+return "text-gray-800";
+};
+​function getLucThan(cungNguHanH, haoNguHanh) {
+if (cungNguHanH === haoNguHanh) return 'Huynh Đệ';
+if (ELEMENTS_RELATION[cungNguHanH].sinh === haoNguHanh) return 'Tử Tôn';
+if (ELEMENTS_RELATION[cungNguHanH].khac === haoNguHanh) return 'Thê Tài';
+if (ELEMENTS_RELATION[haoNguHanh].sinh === cungNguHanH) return 'Phụ Mẫu';
+if (ELEMENTS_RELATION[haoNguHanh].khac === cungNguHanH) return 'Quan Quỷ';
+return '';
+}
+​function anLinhHao(trigramId, stepIdx) {
+const isUpper = stepIdx >= 3;
+const subIdx = stepIdx % 3;
+const napArray = isUpper ? NAP_GIAP[trigramId].ngoai : NAP_GIAP[trigramId].noi;
+const parts = napArray[subIdx].split(' ');
+return { can: parts[0], chi: parts[1], element: CHI_NGU_HANH[parts[1]] || "Kim" };
+}
+​function timPhucThan(cungName, chuLines) {
+const cungElement = CUNG_ELEMENTS[cungName];
+const neededLucThan = ["Huynh Đệ", "Tử Tôn", "Thê Tài", "Quan Quỷ", "Phụ Mẫu"];
+const ownedLucThan = chuLines.map(l => l.lucThan);
+const missing = neededLucThan.filter(t => !ownedLucThan.includes(t));
+if (missing.length === 0) return {};
+const masterTrigram = BAT_QUAI.find(b => b.name === cungName);
+if (!masterTrigram) return {};
+const mapPhuc = {};
+for (let idx = 0; idx < 6; idx++) {
+const isUpper = idx >= 3;
+const napArray = isUpper ? NAP_GIAP[masterTrigram.id].ngoai : NAP_GIAP[masterTrigram.id].noi;
+const parts = napArray[idx % 3].split(' ');
+const element = CHI_NGU_HANH[parts[1]];
+const lucThan = getLucThan(cungElement, element);
+if (missing.includes(lucThan)) mapPhuc[idx] = { lucThan, can: parts[0], chi: parts[1], element };
+}
+return mapPhuc;
+}
+​const checkVuongSuy = (haoElement, mChi) => {
+const monthEl = CHI_NGU_HANH[mChi];
+if (haoElement === monthEl) return "Vượng";
+if (ELEMENTS_RELATION[monthEl].sinh === haoElement) return "Tướng";
+if (ELEMENTS_RELATION[haoElement].sinh === monthEl) return "Hưu";
+if (ELEMENTS_RELATION[haoElement].khac === monthEl) return "Tù";
+if (ELEMENTS_RELATION[monthEl].khac === haoElement) return "Tử";
+return "Hưu";
+};
+​const BlockHexagram = ({ lines, isMovingArray = [], className = "w-[38px] sm:w-[42px] space-y-[2.5px] my-1" }) => (
+<div className={className}>
+{lines.slice().reverse().map((bin, revIdx) => {
+const idx = lines.length - 1 - revIdx;
+const isMoving = isMovingArray[idx] || false;
+const color = isMoving ? 'bg-[#ef4444]' : 'bg-[#000000]';
+return (
+<div key={idx} className={h-[5px] flex flex-col justify-center}>
+{bin === 1 ? (
+<div className={w-full h-full ${color}}></div>
+) : (
+<div className="w-full h-full flex justify-between">
+<div className={w-[42%] h-full ${color}}></div>
+<div className={w-[42%] h-full ${color}}></div>
+</div>
+)}
+</div>
+);
+})}
+</div>
+);
+​const TableLineSymbol = ({ binary, isMoving }) => {
+const color = isMoving ? 'bg-[#ef4444]' : 'bg-[#000000]';
+return (
+<div className="w-4 sm:w-5 h-[3px] mx-auto flex flex-col justify-center my-[1px]">
+{binary === 1 ? (
+<div className={w-full h-full ${color}}></div>
+) : (
+<div className="w-full h-full flex justify-between">
+<div className={w-[40%] h-full ${color}}></div>
+<div className={w-[40%] h-full ${color}}></div>
+</div>
+)}
+</div>
+);
+};
+​const MainApp = () => {
+const [view, setView] = React.useState('setup');
+const [systemType, setSystemType] = React.useState('luchao');
+​const [upperId, setUpperId] = React.useState(7);
+const [lowerId, setLowerId] = React.useState(0);
+const [moving, setMoving] = React.useState([false, false, false, false, false, false]);
+​const [numUpper, setNumUpper] = React.useState('8');
+const [numLower, setNumLower] = React.useState('1');
+const [numMoving, setNumMoving] = React.useState('1');
+const [serialString, setSerialString] = React.useState('');
+​const [vanSu, setVanSu] = React.useState('');
+​const [solarDate, setSolarDate] = React.useState('');
+const [solarTime, setSolarTime] = React.useState('');
+​const [lunarDay, setLunarDay] = React.useState('');
+const [lunarMonth, setLunarMonth] = React.useState('');
+const [lunarYear, setLunarYear] = React.useState('');
+​const [tietKhi, setTietKhi] = React.useState('Chưa rõ/Không dùng');
+​const [yearCan, setYearCan] = React.useState('Giáp'); const [yearChi, setYearChi] = React.useState('Thìn');
+const [monthCan, setMonthCan] = React.useState('Bính'); const [monthChi, setMonthChi] = React.useState('Dần');
+const [dayCan, setDayCan] = React.useState('Giáp'); const [dayChi, setDayChi] = React.useState('Tý');
+const [hourCan, setHourCan] = React.useState('Giáp'); const [hourChi, setHourChi] = React.useState('Tý');
+​const [notification, setNotification] = React.useState('');
+​const showNotification = (msg) => { setNotification(msg); setTimeout(() => setNotification(''), 3500); };
+​const thietLapGioHienTai = () => {
+const current = new Date();
+setSolarDate(${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}-${String(current.getDate()).padStart(2, '0')});
+setSolarTime(${String(current.getHours()).padStart(2, '0')}:${String(current.getMinutes()).padStart(2, '0')});
+};
+​React.useEffect(() => { thietLapGioHienTai(); }, []);
+​React.useEffect(() => {
+if (!solarDate) return;
+try {
+const [yyyy, mm, dd] = solarDate.split('-').map(Number);
+let hh = 0, mins = 0; if (solarTime) { const parts = solarTime.split(':').map(Number); hh = parts[0]||0; mins = parts[1]||0; }
+const current = new Date(yyyy, mm - 1, dd, hh, mins);
+if (typeof Lunar !== 'undefined' && typeof Solar !== 'undefined') {
+const lunar = Solar.fromDate(current).getLunar();
+let lMonth = lunar.getMonth();
+setLunarMonth(String(Math.abs(lMonth)));
+setLunarDay(String(lunar.getDay())); setLunarYear(String(lunar.getYear()));
+​const baZi = lunar.getEightChar();
+const canMap = {'甲':0, '乙':1, '丙':2, '丁':3, '戊':4, '己':5, '庚':6, '辛':7, '壬':8, '癸':9};
+const chiMap = {'子':0, '丑':1, '寅':2, '卯':3, '辰':4, '巳':5, '午':6, '未':7, '申':8, '酉':9, '戌':10, '亥':11};
+if (baZi) {
+if (canMap[baZi.getYearGan()] !== undefined) setYearCan(THIEN_CAN[canMap[baZi.getYearGan()]]);
+if (chiMap[baZi.getYearZhi()] !== undefined) setYearChi(DIA_CHI[chiMap[baZi.getYearZhi()]]);
+if (canMap[baZi.getMonthGan()] !== undefined) setMonthCan(THIEN_CAN[canMap[baZi.getMonthGan()]]);
+if (chiMap[baZi.getMonthZhi()] !== undefined) setMonthChi(DIA_CHI[chiMap[baZi.getMonthZhi()]]);
+if (canMap[baZi.getDayGan()] !== undefined) setDayCan(THIEN_CAN[canMap[baZi.getDayGan()]]);
+if (chiMap[baZi.getDayZhi()] !== undefined) setDayChi(DIA_CHI[chiMap[baZi.getDayZhi()]]);
+if (canMap[baZi.getTimeGan()] !== undefined) setHourCan(THIEN_CAN[canMap[baZi.getTimeGan()]]);
+if (chiMap[baZi.getTimeZhi()] !== undefined) setHourChi(DIA_CHI[chiMap[baZi.getTimeZhi()]]);
+​const yIndex = chiMap[baZi.getYearZhi()];
+const hIndex = chiMap[baZi.getTimeZhi()];
+​if(yIndex !== undefined && hIndex !== undefined) {
+const yNum = yIndex + 1;
+const mNum = Math.abs(lunar.getMonth());
+const dNum = lunar.getDay();
+const hNum = hIndex + 1;
+​let upper = (yNum + mNum + dNum) % 8; if (upper === 0) upper = 8;
+let lower = (yNum + mNum + dNum + hNum) % 8; if (lower === 0) lower = 8;
+let dong = (yNum + mNum + dNum + hNum) % 6; if (dong === 0) dong = 6;
+​setNumUpper(upper.toString());
+setNumLower(lower.toString());
+setNumMoving(dong.toString());
+setSerialString('');
+}
+​const jq = lunar.getPrevJieQi(true);
+if(jq) {
+const JQ_MAP = {"立春":"Lập Xuân","雨水":"Vũ Thủy","惊蛰":"Kinh Trập","春分":"Xuân Phân","清明":"Thanh Minh","谷雨":"Cốc Vũ","立夏":"Lập Hạ","小满":"Tiểu Mãn","芒种":"Mang Chủng","夏至":"Hạ Chí","小暑":"Tiểu Thử","大暑":"Đại Thử","立秋":"Lập Thu","处暑":"Xử Thử","白露":"Bạch Lộ","秋分":"Thu Phân","寒露":"Hàn Lộ","霜降":"Sương Giáng","立冬":"Lập Đông","小雪":"Tiểu Tuyết","大雪":"Đại Tuyết","冬至":"Dong Chí","小寒":"Tiểu Hàn","大寒":"Đại Hàn"};
+if(JQ_MAP[jq.getName()]) setTietKhi(JQ_MAP[jq.getName()]);
+}
+}
+}
+} catch(e) {
+console.error("Lỗi parse ngày tháng Lunar:", e);
+}
+}, [solarDate, solarTime]);
+​const handleSerialChange = (val) => {
+setSerialString(val);
+const digits = val.replace(/\D/g, '');
+if (digits.length > 0) {
+const mid = Math.floor(digits.length / 2);
+const s1 = digits.slice(0, mid); const s2 = digits.slice(mid);
+let sum1 = s1.split('').reduce((acc, curr) => acc + parseInt(curr), 0);
+let sum2 = s2.split('').reduce((acc, curr) => acc + parseInt(curr), 0);
+if (s1.length === 0) sum1 = sum2;
+if (sum1 === 0) sum1 = 8; if (sum2 === 0) sum2 = 8;
+let upper = sum1 % 8; if (upper === 0) upper = 8;
+let lower = sum2 % 8; if (lower === 0) lower = 8;
+let movingLine = (sum1 + sum2) % 6; if (movingLine === 0) movingLine = 6;
+setNumUpper(upper.toString()); setNumLower(lower.toString()); setNumMoving(movingLine.toString());
+}
+};
+​const toggleHaoDong = (index) => { const nextMov = [...moving]; nextMov[index] = !nextMov[index]; setMoving(nextMov); };
+​const handleGieoQueTuDong = () => {
+let linesBinary = []; let newMoving = [false, false, false, false, false, false];
+for(let i = 0; i < 6; i++) {
+let sum = (Math.random() > 0.5 ? 3 : 2) + (Math.random() > 0.5 ? 3 : 2) + (Math.random() > 0.5 ? 3 : 2);
+if (sum === 9) { linesBinary.push(1); newMoving[i] = true; }
+else if (sum === 8) { linesBinary.push(0); newMoving[i] = false; }
+else if (sum === 7) { linesBinary.push(1); newMoving[i] = false; }
+else if (sum === 6) { linesBinary.push(0); newMoving[i] = true; }
+}
+setLowerId(findTrigramFromBinary(linesBinary.slice(0, 3))); setUpperId(findTrigramFromBinary(linesBinary.slice(3, 6))); setMoving(newMoving);
+showNotification("Gieo 6 lần đồng xu hoàn tất! Đã lập quẻ mới.");
+};
+​const handleLapLucHaoTheoGio = () => {
+const chiToNum = { 'Tý': 1, 'Sửu': 2, 'Dần': 3, 'Mão': 4, 'Thìn': 5, 'Tỵ': 6, 'Ngọ': 7, 'Mùi': 8, 'Thân': 9, 'Dậu': 10, 'Tuất': 11, 'Hợi': 12 };
+const yNum = chiToNum[yearChi];
+const mNum = parseInt(lunarMonth);
+const dNum = parseInt(lunarDay);
+const hNum = chiToNum[hourChi];
+​if(!yNum || !mNum || !dNum || !hNum) {
+showNotification("Thời gian chưa hợp lệ, vui lòng kiểm tra lại!");
+return;
+}
+​let upper = (yNum + mNum + dNum) % 8; if (upper === 0) upper = 8;
+let lower = (yNum + mNum + dNum + hNum) % 8; if (lower === 0) lower = 8;
+let dong = (yNum + mNum + dNum + hNum) % 6; if (dong === 0) dong = 6;
+​const uQuai = BAT_QUAI.find(q => q.number === upper);
+const lQuai = BAT_QUAI.find(q => q.number === lower);
+​if (uQuai && lQuai) {
+setUpperId(uQuai.id);
+setLowerId(lQuai.id);
+const newMoving = [false, false, false, false, false, false];
+newMoving[dong - 1] = true;
+setMoving(newMoving);
+showNotification("Đã lập quẻ Lục Hào theo ngày giờ động tâm!");
+}
+};
+​const handleGieoMaiHoaTuDong = () => {
+let upper = Math.floor(Math.random() * 8) + 1;
+let lower = Math.floor(Math.random() * 8) + 1;
+let dong = Math.floor(Math.random() * 6) + 1;
+setNumUpper(upper.toString());
+setNumLower(lower.toString());
+setNumMoving(dong.toString());
+setSerialString('');
+showNotification("Lấy số ngẫu nhiên Mai Hoa hoàn tất!");
+};
+​const handleLapMaiHoaTheoGio = () => {
+const chiToNum = { 'Tý': 1, 'Sửu': 2, 'Dần': 3, 'Mão': 4, 'Thìn': 5, 'Tỵ': 6, 'Ngọ': 7, 'Mùi': 8, 'Thân': 9, 'Dậu': 10, 'Tuất': 11, 'Hợi': 12 };
+const yNum = chiToNum[yearChi];
+const mNum = parseInt(lunarMonth);
+const dNum = parseInt(lunarDay);
+const hNum = chiToNum[hourChi];
+​if(!yNum || !mNum || !dNum || !hNum) {
+showNotification("Thời gian chưa hợp lệ, vui lòng kiểm tra lại!");
+return;
+}
+​let upper = (yNum + mNum + dNum) % 8; if (upper === 0) upper = 8;
+let lower = (yNum + mNum + dNum + hNum) % 8; if (lower === 0) lower = 8;
+let dong = (yNum + mNum + dNum + hNum) % 6; if (dong === 0) dong = 6;
+​setNumUpper(upper.toString());
+setNumLower(lower.toString());
+setNumMoving(dong.toString());
+setSerialString('');
+showNotification("Đã thiết lập Mai Hoa theo thời gian hiện tại!");
+};
+​const keyChu = ${upperId}_${lowerId};
+const [chuName, chuCungName, chuTheHao, chuThoan = "", chuProps = []] = HEXAGRAM_DATABASE[keyChu] || ["Quẻ Lạ", "Càn", 6, "HUNG CÁT KHÓ LƯỜNG", []];
+const chuCungElement = CUNG_ELEMENTS[chuCungName];
+const chuUngHao = (chuTheHao + 2) % 6 + 1;
+​const chuLines = [];
+const upperBin = BAT_QUAI[upperId].binary; const lowerBin = BAT_QUAI[lowerId].binary;
+const totalBinChu = [...lowerBin, ...upperBin];
+for (let idx = 0; idx < 6; idx++) {
+const info = anLinhHao(idx >= 3 ? upperId : lowerId, idx);
+chuLines.push({ index: idx, binary: totalBinChu[idx], can: info.can, chi: info.chi, element: info.element, lucThan: getLucThan(chuCungElement, info.element), isDong: moving[idx] });
+}
+​const mapPhuc = timPhucThan(chuCungName, chuLines);
+​const totalBinBien = totalBinChu.map((val, idx) => moving[idx] ? (val === 1 ? 0 : 1) : val);
+const bienLowerId = findTrigramFromBinary(totalBinBien.slice(0, 3)); const bienUpperId = findTrigramFromBinary(totalBinBien.slice(3, 6));
+const [bienName, bienCungName, , bienThoan = "", bienProps = []] = HEXAGRAM_DATABASE[${bienUpperId}_${bienLowerId}] || ["Biến Quẻ", "Khôn", 6, "", []];
+const bienLines = [];
+for (let idx = 0; idx < 6; idx++) {
+const info = anLinhHao(idx >= 3 ? bienUpperId : bienLowerId, idx);
+bienLines.push({ index: idx, binary: totalBinBien[idx], can: info.can, chi: info.chi, element: info.element, lucThan: getLucThan(chuCungElement, info.element) });
+}
+​const hoLowerId_LH = findTrigramFromBinary([totalBinChu[1], totalBinChu[2], totalBinChu[3]]);
+const hoUpperId_LH = findTrigramFromBinary([totalBinChu[2], totalBinChu[3], totalBinChu[4]]);
+const [lhHoName, lhHoCungName = "", , lhHoThoan = "", hoProps = []] = HEXAGRAM_DATABASE[${hoUpperId_LH}_${hoLowerId_LH}] || ["Quẻ Hỗ", "", 0, "", []];
+const lhHoBin = [...BAT_QUAI[hoLowerId_LH].binary, ...BAT_QUAI[hoUpperId_LH].binary];
+​const startLucThuIdx = LUC_THU_KHOI[dayCan] || 0; const lucThuLineList = [];
+for (let i = 0; i < 6; i++) lucThuLineList.push(LUC_THU_LIST[(startLucThuIdx + i) % 6]);
+​const layQuaiMaiHoa = (num) => BAT_QUAI.find(q => q.number === (parseInt(num)%8||8)) || BAT_QUAI[0];
+const mhUpperQuai = layQuaiMaiHoa(numUpper); const mhLowerQuai = layQuaiMaiHoa(numLower); const mhHaoDong = (parseInt(numMoving)%6||6);
+const totalMhBinChu = [...mhLowerQuai.binary, ...mhUpperQuai.binary];
+const totalMhBinBien = totalMhBinChu.map((v, i) => (i === (mhHaoDong - 1)) ? (v === 1 ? 0 : 1) : v);
+​const mhLowerBienId = findTrigramFromBinary(totalMhBinBien.slice(0, 3)); const mhUpperBienId = findTrigramFromBinary(totalMhBinBien.slice(3, 6));
+​const [mhChuNameFull, mhChuCungName = "", , mhChuThoan = "", mhChuProps = []] = HEXAGRAM_DATABASE[${mhUpperQuai.id}_${mhLowerQuai.id}] || ["", "", 0, "", []];
+const [mhBienNameFull, mhBienCungName = "", , mhBienThoan = "", mhBienProps = []] = HEXAGRAM_DATABASE[${mhUpperBienId}_${mhLowerBienId}] || ["", "", 0, "", []];
+​const hoUpperQuai = BAT_QUAI[findTrigramFromBinary([totalMhBinChu[2], totalMhBinChu[3], totalMhBinChu[4]])];
+const hoLowerQuai = BAT_QUAI[findTrigramFromBinary([totalMhBinChu[1], totalMhBinChu[2], totalMhBinChu[3]])];
+const [mhHoNameFull, mhHoCungName = "", , mhHoThoan = "", mhHoProps = []] = HEXAGRAM_DATABASE[${hoUpperQuai.id}_${hoLowerQuai.id}] || ["", "", 0, "", []];
+​const finalChuName = systemType === 'luchao' ? chuName : mhChuNameFull;
+const finalHoName = systemType === 'luchao' ? lhHoName : mhHoNameFull;
+const finalBienName = systemType === 'luchao' ? bienName : mhBienNameFull;
+​const finalChuProps = systemType === 'luchao' ? chuProps : mhChuProps;
+const finalHoProps = systemType === 'luchao' ? hoProps : mhHoProps;
+​const finalChuBin = systemType === 'luchao' ? totalBinChu : totalMhBinChu;
+const finalHoBin = systemType === 'luchao' ? lhHoBin : [...hoLowerQuai.binary, ...hoUpperQuai.binary];
+const finalBienBin = systemType === 'luchao' ? totalBinBien : totalMhBinBien;
+const finalMoving = systemType === 'luchao' ? moving : [false,false,false,false,false,false].map((v,i) => i === mhHaoDong - 1);
+​const pnPnProps = tinhPhanNgamPhucNgam(chuLines, bienLines, finalMoving);
+let finalBienProps = systemType === 'luchao' ? bienProps : mhBienProps;
+if (pnPnProps.length > 0) finalBienProps = [...finalBienProps, ...pnPnProps];
+​const finalChuCung = systemType === 'luchao' ? chuCungName : mhChuCungName;
+const finalHoCung = systemType === 'luchao' ? lhHoCungName : mhHoCungName;
+const finalBienCung = systemType === 'luchao' ? bienCungName : mhBienCungName;
+​const resolvedChuElement = CUNG_ELEMENTS[finalChuCung] || 'Kim';
+​const finalChuThoan = systemType === 'luchao' ? chuThoan : mhChuThoan;
+const finalHoThoan = systemType === 'luchao' ? lhHoThoan : mhHoThoan;
+const finalBienThoan = systemType === 'luchao' ? bienThoan : mhBienThoan;
+​const formatTextProps = (propsArr) => { if (!propsArr || propsArr.length === 0) return ''; return propsArr.join(' - '); };
+​const chuPropText = formatTextProps(finalChuProps);
+const hoPropText = formatTextProps(finalHoProps);
+const bienPropText = formatTextProps(finalBienProps);
+​let mhUpperRole, mhLowerRole, hoUpperRole, hoLowerRole, bienUpperRole, bienLowerRole;
+let hoUpperInfo, hoLowerInfo, bienUpperInfo, bienLowerInfo;
+if (systemType === 'maihoa') {
+const isUpperDong = mhHaoDong > 3;
+mhUpperRole = isUpperDong ? 'DỤNG' : 'THỂ';
+mhLowerRole = isUpperDong ? 'THỂ' : 'DỤNG';
+hoUpperRole = isUpperDong ? 'H.DỤNG' : 'H.THỂ';
+hoLowerRole = isUpperDong ? 'H.THỂ' : 'H.DỤNG';
+bienUpperRole = isUpperDong ? 'BIẾN' : 'THỂ';
+bienLowerRole = isUpperDong ? 'THỂ' : 'BIẾN';
+​hoUpperInfo = hoUpperQuai;
+hoLowerInfo = hoLowerQuai;
+bienUpperInfo = BAT_QUAI[mhUpperBienId];
+bienLowerInfo = BAT_QUAI[mhLowerBienId];
+}
+​const handleSetupSubmit = () => {
+setView('result');
+};
+​const handleExportImage = () => {
+const captureArea = document.getElementById('pdf-render-zone');
+if (!captureArea) return;
+showNotification("Đang xuất ảnh lá quẻ. Vui lòng chờ giây lát...");
+captureArea.classList.add('export-mode');
+html2canvas(captureArea, { scale: 3, useCORS: true, backgroundColor: '#fdfaf2' }).then(canvas => {
+captureArea.classList.remove('export-mode');
+const link = document.createElement('a');
+link.download = La-Que-ThienCo-${systemType}.png;
+link.href = canvas.toDataURL('image/png', 1.0);
+link.click();
+showNotification("Tải ảnh thành công!");
+}).catch(err => {
+captureArea.classList.remove('export-mode');
+showNotification("Lỗi xuất ảnh! Hãy thử lại.");
+console.error(err);
+});
+};
+​// Hàm tạo Tên Hào Chuẩn Âm Dương (Sơ Cửu / Sơ Lục, Cửu Nhị / Lục Nhị, v.v...)
+const getTenHaoChuan = (index, isYang) => {
+const namesYang = ["Sơ Cửu", "Cửu Nhị", "Cửu Tam", "Cửu Tứ", "Cửu Ngũ", "Thượng Cửu"];
+const namesYin  = ["Sơ Lục", "Lục Nhị", "Lục Tam", "Lục Tứ", "Lục Ngũ", "Thượng Lục"];
+return isYang ? namesYang[index] : namesYin[index];
+};
+​// Tự động sinh Hào Từ chuẩn cho tất cả các quẻ chưa có danh sách cứng
+const generateHaoTuList = (queName, binArray) => {
+if (HAO_TU_SPECIFIC[queName]) {
+return HAO_TU_SPECIFIC[queName].map((h, i) => ({
+...h,
+name: getTenHaoChuan(i, binArray[i] === 1)
+}));
+}
+​// Từ điển Hào Từ mẫu cho 384 hào tự động theo vị trí
+const templates = [
+{ han: "初九：履霜，坚冰至", vi: "Sơ cửu: Lý sương, kiên băng chí.", dich: "Hào 1: Động thái ban đầu mới bắt đầu manh nha, phải phòng ngừa tai họa từ sớm." },
+{ han: "二爻：直方大，不习无不利", vi: "Nhị hào: Trực phương đại, bất tập vô bất lợi.", dich: "Hào 2: Đắc trung đắc chính, sự nghiệp trung thành đàng hoàng thì không gì bất lợi." },
+{ han: "三爻：含章可贞，或从王事", vi: "Tam hào: Hàm chương khả trinh, hoặc tòng vương sự.", dich: "Hào 3: Ở vị trí ranh giới nguy hiểm, nên thu mình ẩn giấu tài năng chờ thời cơ." },
+{ han: "四爻：括囊，无咎无誉", vi: "Tứ hào: Khoát nang, vô cữu vô dự.", dich: "Hào 4: Tiến sát cấp trên, giữ miệng thắt túi bảo toàn bản thân thì không lỗi." },
+{ han: "五爻：黄裳元吉", vi: "Ngũ hào: Hoàng xiêm nguyên cát.", dich: "Hào 5: Ngôi chí tôn đắc trung đắc chính, sự nghiệp rực rỡ đại cát đại lợi." },
+{ han: "上爻：龙战于野，其血玄黄", vi: "Thượng hào: Long chiến vu dã, kỳ huyết huyền hoàng.", dich: "Hào 6: Cực điểm thoái trào kiêu ngạo ắt thất bại, cần biết điểm dừng đúng lúc." }
+];
+​return binArray.map((bin, i) => {
+const isYang = bin === 1;
+const name = getTenHaoChuan(i, isYang);
+const prefixHan = isYang ? (i=0?"初九":i=5?"上九":九${["一","二","三","四","五"][i]}) : (i=0?"初六":i=5?"上六":六${["一","二","三","四","五"][i]});
+return {
+name: name,
+han: ${prefixHan}：${templates[i].han.split("：")[1] || templates[i].han},
+vi: ${name}: ${templates[i].vi.split(": ")[1] || templates[i].vi},
+dich: templates[i].dich
+};
+});
+};
+​const haoTuFull = generateHaoTuList(finalChuName, finalChuBin);
+​return (
+<div className="max-w-7xl mx-auto flex flex-col items-center pb-12 px-2 relative">
+​{notification && (
+<div className="fixed top-8 left-1/2 transform -translate-x-1/2 bg-gray-900/95 text-white px-5 py-3 rounded-xl shadow-2xl z-50 text-sm font-bold transition-all duration-300 flex items-center gap-2 border border-gray-700 backdrop-blur-sm">
+<i className="fa-solid fa-circle-check text-green-400 text-lg"></i>
+{notification}
+</div>
+)}
+​{view === 'setup' && (
+<div className="w-full max-w-[900px] grid grid-cols-1 lg:grid-cols-12 gap-6 mt-4">
+<div className="lg:col-span-5 bg-white p-5 rounded-2xl shadow-xl border border-amber-200 flex flex-col gap-4">
+​<div className="text-center">
+<h1 className="text-xl font-bold uppercase serif-title tracking-wider rainbow-text">THIÊN CƠ TỬU KHÁCH</h1>
+<p className="text-xs text-gray-500">Chuyên sâu Cầu Tài - Tình Duyên - Phong Thủy</p>
+</div>
+​<div className="flex bg-amber-100 p-1 rounded-lg w-full">
+<button onClick={() => setSystemType('luchao')} className={flex-1 py-2 text-sm font-bold rounded-md transition-all ${systemType === 'luchao' ? 'bg-white text-[#dc2626] shadow' : 'text-amber-800'}}>LỤC HÀO</button>
+<button onClick={() => setSystemType('maihoa')} className={flex-1 py-2 text-sm font-bold rounded-md transition-all ${systemType === 'maihoa' ? 'bg-white text-[#dc2626] shadow' : 'text-amber-800'}}>MAI HOA</button>
+</div>
+​<div className="bg-white border border-amber-200 p-4 rounded-xl shadow-sm">
+<label className="text-sm font-bold text-amber-900 uppercase flex items-center gap-2 mb-2">
+<i className="fa-solid fa-pen-nib text-amber-600"></i> Nội dung Vấn sự
+</label>
+<input
+type="text"
+value={vanSu}
+onChange={e => setVanSu(e.target.value)}
+placeholder="Nhập việc cần hỏi (không bắt buộc)..."
+className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all bg-gray-50"
+/>
+</div>
+​<div>
+<div className="flex justify-between items-center mb-2">
+<h3 className="text-sm font-bold text-amber-900 uppercase flex items-center gap-2"><i className="fa-solid fa-clock"></i> Thời điểm lập quẻ</h3>
+<button onClick={thietLapGioHienTai} className="text-[11px] bg-amber-100 text-amber-800 font-bold py-1 px-3 rounded shadow-sm border border-amber-200 hover:bg-amber-200 transition">Lấy giờ hiện tại</button>
+</div>
+<div className="bg-white border border-amber-100 rounded-lg p-3 shadow-sm space-y-3">
+<div className="grid grid-cols-2 gap-3">
+<div><label className="text-[10px] text-gray-500 font-bold mb-1 block">Dương Lịch</label><input type="date" value={solarDate} onChange={e => setSolarDate(e.target.value)} className="w-full border rounded p-1.5 text-sm font-bold text-blue-900 outline-none" /></div>
+<div><label className="text-[10px] text-gray-500 font-bold mb-1 block">Giờ (Dương)</label><input type="time" value={solarTime} onChange={e => setSolarTime(e.target.value)} className="w-full border rounded p-1.5 text-sm font-bold text-blue-900 outline-none" /></div>
+</div>
+<div className="flex gap-2">
+<input type="number" value={lunarDay} readOnly className="w-1/3 border rounded p-1.5 text-sm bg-gray-50 text-center text-gray-500 font-medium" title="Ngày Âm lịch" />
+<input type="number" value={lunarMonth} readOnly className="w-1/3 border rounded p-1.5 text-sm bg-gray-50 text-center text-gray-500 font-medium" title="Tháng Âm lịch" />
+<input type="number" value={lunarYear} readOnly className="w-1/3 border rounded p-1.5 text-sm bg-gray-50 text-center text-gray-500 font-medium" title="Năm Âm lịch" />
+</div>
+<div><label className="text-[10px] text-gray-500 font-bold mb-1 block">Tiết Khí</label><select value={tietKhi} onChange={e => setTietKhi(e.target.value)} className="w-full border rounded p-1.5 text-sm outline-none">{TIET_KHI_LIST.map(t => <option key={t} value={t}>{t}</option>)}</select></div>
+</div>
+<div className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg shadow-inner">
+<p className="text-xs font-bold text-[#dc2626] mb-2 uppercase">Can Chi Trạch Nhật</p>
+<div className="grid grid-cols-2 gap-4">
+<div className="flex gap-1"><select value={yearCan} onChange={e => setYearCan(e.target.value)} className="w-1/2 border rounded p-1 text-xs outline-none">{THIEN_CAN.map(c => <option key={c} value={c}>{c}</option>)}</select><select value={yearChi} onChange={e => setYearChi(e.target.value)} className="w-1/2 border rounded p-1 text-xs outline-none">{DIA_CHI.map(c => <option key={c} value={c}>{c}</option>)}</select></div>
+<div className="flex gap-1"><select value={monthCan} onChange={e => setMonthCan(e.target.value)} className="w-1/2 border rounded p-1 text-xs outline-none">{THIEN_CAN.map(c => <option key={c} value={c}>{c}</option>)}</select><select value={monthChi} onChange={e => setMonthChi(e.target.value)} className="w-1/2 border rounded p-1 text-xs outline-none">{DIA_CHI.map(c => <option key={c} value={c}>{c}</option>)}</select></div>
+<div className="flex gap-1"><select value={dayCan} onChange={e => setDayCan(e.target.value)} className="w-1/2 border rounded p-1 text-xs outline-none">{THIEN_CAN.map(c => <option key={c} value={c}>{c}</option>)}</select><select value={dayChi} onChange={e => setDayChi(e.target.value)} className="w-1/2 border rounded p-1 text-xs outline-none">{DIA_CHI.map(c => <option key={c} value={c}>{c}</option>)}</select></div>
+<div className="flex gap-1"><select value={hourCan} onChange={e => setHourCan(e.target.value)} className="w-1/2 border rounded p-1 text-xs outline-none">{THIEN_CAN.map(c => <option key={c} value={c}>{c}</option>)}</select><select value={hourChi} onChange={e => setHourChi(e.target.value)} className="w-1/2 border rounded p-1 text-xs outline-none">{DIA_CHI.map(c => <option key={c} value={c}>{c}</option>)}</select></div>
+</div>
+</div>
+</div>
+​{systemType === 'luchao' && (
+<div className="border-t border-amber-100 pt-3 flex flex-col gap-3">
+<div className="flex justify-between items-center">
+<h3 className="text-sm font-bold text-amber-900 uppercase">Thiết lập Lục Hào</h3>
+<div className="flex gap-1.5">
+<button onClick={handleLapLucHaoTheoGio} className="bg-[#dc2626] hover:bg-red-800 text-white px-2 py-1.5 rounded text-[10px] font-bold transition shadow-sm">Theo ngày giờ</button>
+<button onClick={handleGieoQueTuDong} className="bg-amber-600 hover:bg-amber-700 text-white px-2 py-1.5 rounded text-[10px] font-bold transition shadow-sm">Ngẫu nhiên</button>
+</div>
+</div>
+<div><label className="text-[11px] font-bold text-gray-600 block mb-1">Thượng Quái:</label><select value={upperId} onChange={e => setUpperId(parseInt(e.target.value))} className="w-full border rounded p-2 text-sm outline-none">{BAT_QUAI.map(q => <option key={q.id} value={q.id}>{q.name}</option>)}</select></div>
+<div><label className="text-[11px] font-bold text-gray-600 block mb-1">Hạ Quái:</label><select value={lowerId} onChange={e => setLowerId(parseInt(e.target.value))} className="w-full border rounded p-2 text-sm outline-none">{BAT_QUAI.map(q => <option key={q.id} value={q.id}>{q.name}</option>)}</select></div>
+<div className="grid grid-cols-6 gap-2">{[0, 1, 2, 3, 4, 5].map(idx => (<button key={idx} onClick={() => toggleHaoDong(idx)} className={py-1.5 text-xs font-bold rounded border transition ${moving[idx] ? 'bg-red-600 border-red-700 text-white shadow' : 'bg-white text-gray-700 hover:bg-gray-50'}}>Hào {idx + 1}</button>))}</div>
+</div>
+)}
+​{systemType === 'maihoa' && (
+<div className="border-t border-amber-100 pt-3 flex flex-col gap-3">
+<div className="flex justify-between items-center">
+<h3 className="text-sm font-bold text-amber-900 uppercase">Thiết lập số Mai Hoa</h3>
+<div className="flex gap-1.5">
+<button onClick={handleLapMaiHoaTheoGio} className="bg-[#dc2626] hover:bg-red-800 text-white px-2 py-1.5 rounded text-[10px] font-bold transition shadow-sm">Theo ngày giờ</button>
+<button onClick={handleGieoMaiHoaTuDong} className="bg-amber-600 hover:bg-amber-700 text-white px-2 py-1.5 rounded text-[10px] font-bold transition shadow-sm">Ngẫu nhiên</button>
+</div>
+</div>
+<input type="text" placeholder="Nhập Serial quẻ để tự động chia (nếu có)..." value={serialString} onChange={e => handleSerialChange(e.target.value)} className="w-full border rounded p-2 text-sm outline-none focus:border-amber-400"/>
+<div className="grid grid-cols-3 gap-2 mt-1">
+<div><label className="text-[11px] font-bold text-gray-600">Thượng (1-8):</label><input type="number" value={numUpper} onChange={e => setNumUpper(e.target.value)} min="1" max="8" className="w-full border rounded p-1.5 text-sm text-center font-bold outline-none focus:border-amber-400" /></div>
+<div><label className="text-[11px] font-bold text-gray-600">Hạ (1-8):</label><input type="number" value={numLower} onChange={e => setNumLower(e.target.value)} min="1" max="8" className="w-full border rounded p-1.5 text-sm text-center font-bold outline-none focus:border-amber-400" /></div>
+<div><label className="text-[11px] font-bold text-red-600">Động (1-6):</label><input type="number" value={numMoving} onChange={e => setNumMoving(e.target.value)} min="1" max="6" className="w-full border rounded p-1.5 text-sm text-center font-bold text-red-600 outline-none focus:border-red-400" /></div>
+</div>
+</div>
+)}
+<button onClick={handleSetupSubmit} className="w-full mt-2 bg-gradient-to-r from-[#dc2626] to-red-800 hover:from-red-800 hover:to-red-900 text-white font-bold py-3.5 rounded-xl shadow-lg uppercase text-sm transition transform hover:-translate-y-0.5">XEM LÁ QUẺ</button>
+</div>
+​<div className="lg:col-span-7 bg-white p-6 rounded-2xl shadow-xl hidden lg:flex flex-col items-center justify-center border border-amber-100">
+<i className="fa-solid fa-yin-yang text-6xl text-amber-200 mb-4 animate-spin-slow" style={{animationDuration: '10s'}}></i>
+<p className="text-gray-500 italic font-medium text-center">Hoàn tất thiết lập và bấm "XEM LÁ QUẺ"
+để hiển thị kết quả tại đây.</p>
+</div>
+</div>
+)}
+​{view === 'result' && (
+<div className="w-full flex flex-col items-center mt-4 mb-8">
+​<div className="w-full max-w-[580px] flex justify-between px-1 mb-4 no-print">
+<button onClick={() => setView('setup')} className="bg-gray-700 hover:bg-gray-800 text-white font-bold py-2.5 px-4 rounded-lg shadow text-sm transition flex items-center gap-2"><i className="fa-solid fa-arrow-left"></i> Sửa Lại</button>
+<button onClick={handleExportImage} className="bg-amber-700 hover:bg-amber-800 text-white font-bold py-2.5 px-4 rounded-lg shadow text-sm transition flex items-center gap-2"><i className="fa-solid fa-download"></i> Tải Ảnh Quẻ</button>
+</div>
+​<div className="export-container relative">
+<div id="pdf-render-zone" className="la-que-bg p-3 sm:p-4 flex flex-col relative font-sans">
+​<div className="w-full border-b border-[#d4af37] pb-2 mb-2 relative">
+<div className="flex justify-between items-center mb-2 px-1">
+<h1 className="text-[13px] sm:text-[15px] text-[#b8860b] font-extrabold uppercase tracking-wide">PHẦN MỀM LẬP QUẺ DỊCH</h1>
+<i className="fa-brands fa-pagelines text-[#ffb6c1] text-2xl opacity-60 absolute right-1 top-0"></i>
+</div>
+​<table className="w-full text-[9.5px] sm:text-[10.5px] text-gray-900 leading-tight">
+<tbody>
+<tr>
+<td className="text-[#8b4513] font-bold w-[22%] align-top py-[1.5px]">Phương pháp:</td>
+<td className="font-bold text-[#1d4ed8] py-[1.5px]">{systemType === 'luchao' ? 'Lá Quẻ Lục Hào' : 'Lá Quẻ Mai Hoa'}</td>
+</tr>
+<tr>
+<td className="text-[#8b4513] font-bold align-top py-[1.5px]">Sự việc xem:</td>
+<td className="text-[#dc2626] font-bold py-[1.5px]">{vanSu ? vanSu : 'Quẻ Tổng Quát'}</td>
+</tr>
+<tr>
+<td className="text-[#8b4513] font-bold align-top py-[1.5px]">Ngày lập quẻ:</td>
+<td className="font-medium py-[1.5px] text-gray-800">
+Dương lịch: <span className="font-bold">{solarDate.split('-').reverse().join('/')} {solarTime}</span> <span className="mx-1 text-gray-300">|</span>
+Âm Lịch: giờ <span className="font-bold"><span className={getElementColor(CAN_NGU_HANH[hourCan])}>{hourCan}</span> <span className={getElementColor(CHI_NGU_HANH[hourChi])}>{hourChi}</span></span>, {lunarDay}/{lunarMonth}/{lunarYear}
+</td>
+</tr>
+<tr>
+<td className="text-[#8b4513] font-bold align-top py-[1.5px]">Can Chi:</td>
+<td className="font-medium text-black py-[1.5px]">
+Giờ <span className="font-bold"><span className={getElementColor(CAN_NGU_HANH[hourCan])}>{hourCan}</span> <span className={getElementColor(CHI_NGU_HANH[hourChi])}>{hourChi}</span></span> - Ngày <span className="font-bold"><span className={getElementColor(CAN_NGU_HANH[dayCan])}>{dayCan}</span> <span className={getElementColor(CHI_NGU_HANH[dayChi])}>{dayChi}</span></span> - Tháng <span className="font-bold"><span className={getElementColor(CAN_NGU_HANH[monthCan])}>{monthCan}</span> <span className={getElementColor(CHI_NGU_HANH[monthChi])}>{monthChi}</span></span> - Năm <span className="font-bold"><span className={getElementColor(CAN_NGU_HANH[yearCan])}>{yearCan}</span> <span className={getElementColor(CHI_NGU_HANH[yearChi])}>{yearChi}</span></span>
+</td>
+</tr>
+<tr>
+<td className="text-[#8b4513] font-bold align-top py-[1.5px]">Tiết khí:</td>
+<td className="font-medium py-[1.5px]">
+<strong className="text-[#15803d]">{tietKhi}</strong>
+<span className="mx-1.5 text-gray-300">|</span>
+Nhật thần: <span className="font-bold"><span className={getElementColor(CAN_NGU_HANH[dayCan]||'Thổ')}>{dayCan}</span> <span className={getElementColor(CHI_NGU_HANH[dayChi])}>{dayChi}</span></span>
+<span className="mx-1.5 text-gray-300">|</span>
+Nguyệt lệnh: <span className="font-bold"><span className={getElementColor(CAN_NGU_HANH[monthCan]||'Thổ')}>{monthCan}</span> <span className={getElementColor(CHI_NGU_HANH[monthChi])}>{monthChi}</span></span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+​<div className="flex justify-between items-stretch px-1 sm:px-2 mb-2 gap-2">
+​{/* QUẺ CHỦ */}
+<div className="flex flex-col items-center justify-start w-[32%] px-0.5 pb-1">
+<div className="h-[32px] sm:h-[36px] flex items-center justify-center w-full mb-1 px-1">
+<h2 className="text-[10px] sm:text-[11.5px] font-bold text-[#b91c1c] uppercase tracking-tight text-center leading-[1.15] break-words">
+{finalChuName}
+</h2>
+</div>
+​{systemType === 'luchao' ? (
+<BlockHexagram lines={finalChuBin} isMovingArray={finalMoving} />
+) : (
+<div className="flex items-center w-full justify-center">
+<div className="flex-1 flex flex-col justify-around h-[38px] sm:h-[42px] text-[7.5px] sm:text-[8.5px] font-bold text-right pr-1.5 sm:pr-2 whitespace-nowrap">
+<div className="leading-[1.1]">
+<span className={uppercase ${getRoleColor(mhUpperRole)}}>{mhUpperRole}</span>
+</div>
+<div className="leading-[1.1]">
+<span className={uppercase ${getRoleColor(mhLowerRole)}}>{mhLowerRole}</span>
+</div>
+</div>
+<BlockHexagram lines={finalChuBin} isMovingArray={finalMoving} className="w-[30px] sm:w-[36px] space-y-[2px] sm:space-y-[2.5px] flex-none mx-auto" />
+<div className="flex-1 flex flex-col justify-around h-[38px] sm:h-[42px] text-[7.5px] sm:text-[8.5px] font-bold text-left pl-1.5 sm:pl-2 whitespace-nowrap">
+<div className="leading-[1.1]">
+<span className={uppercase ${getElementColor(mhUpperQuai.element)}}>{mhUpperQuai.name}</span>
+
+<span className={text-[6.5px] sm:text-[7.5px] ${getElementColor(mhUpperQuai.element)}}>{mhUpperQuai.element}</span>
+</div>
+<div className="leading-[1.1]">
+<span className={uppercase ${getElementColor(mhLowerQuai.element)}}>{mhLowerQuai.name}</span>
+
+<span className={text-[6.5px] sm:text-[7.5px] ${getElementColor(mhLowerQuai.element)}}>{mhLowerQuai.element}</span>
+</div>
+</div>
+</div>
+)}
+​<div className="mt-1.5 w-full text-center">
+<div className={text-[8.5px] sm:text-[10px] uppercase font-bold leading-normal ${getElementColor(CUNG_ELEMENTS[finalChuCung])}}>
+HỌ {finalChuCung}
+</div>
+{chuPropText && (
+<div className="text-[#b91c1c] font-semibold text-[7.5px] sm:text-[8.5px] leading-normal mt-0.5">
+({chuPropText})
+</div>
+)}
+</div>
+​<div className="text-[8.5px] sm:text-[10px] font-bold text-gray-800 uppercase mt-1 w-full text-center leading-normal pb-1">
+{finalChuThoan}
+</div>
+</div>
+​{/* QUẺ HỖ */}
+<div className="flex flex-col items-center justify-start w-[32%] px-0.5 pb-1">
+<div className="h-[32px] sm:h-[36px] flex items-center justify-center w-full mb-1 px-1">
+<h2 className="text-[10px] sm:text-[11.5px] font-bold text-gray-600 uppercase tracking-tight text-center leading-[1.15] break-words">
+{finalHoName}
+</h2>
+</div>
+​{systemType === 'luchao' ? (
+<BlockHexagram lines={finalHoBin} />
+) : (
+<div className="flex items-center w-full justify-center">
+<div className="flex-1 flex flex-col justify-around h-[38px] sm:h-[42px] text-[7.5px] sm:text-[8.5px] font-bold text-right pr-1.5 sm:pr-2 whitespace-nowrap">
+<div className="leading-[1.1]">
+<span className={uppercase ${getRoleColor(hoUpperRole)}}>{hoUpperRole}</span>
+</div>
+<div className="leading-[1.1]">
+<span className={uppercase ${getRoleColor(hoLowerRole)}}>{hoLowerRole}</span>
+</div>
+</div>
+<BlockHexagram lines={finalHoBin} className="w-[30px] sm:w-[36px] space-y-[2px] sm:space-y-[2.5px] flex-none mx-auto" />
+<div className="flex-1 flex flex-col justify-around h-[38px] sm:h-[42px] text-[7.5px] sm:text-[8.5px] font-bold text-left pl-1.5 sm:pl-2 whitespace-nowrap">
+<div className="leading-[1.1]">
+<span className={uppercase ${getElementColor(hoUpperInfo.element)}}>{hoUpperInfo.name}</span>
+
+<span className={text-[6.5px] sm:text-[7.5px] ${getElementColor(hoUpperInfo.element)}}>{hoUpperInfo.element}</span>
+</div>
+<div className="leading-[1.1]">
+<span className={uppercase ${getElementColor(hoLowerInfo.element)}}>{hoLowerInfo.name}</span>
+
+<span className={text-[6.5px] sm:text-[7.5px] ${getElementColor(hoLowerInfo.element)}}>{hoLowerInfo.element}</span>
+</div>
+</div>
+</div>
+)}
+​<div className="mt-1.5 w-full text-center">
+<div className={text-[8.5px] sm:text-[10px] uppercase font-bold leading-normal ${getElementColor(CUNG_ELEMENTS[finalHoCung])}}>
+HỌ {finalHoCung}
+</div>
+{hoPropText && (
+<div className="text-[#a91d1d] font-semibold text-[7.5px] sm:text-[8.5px] leading-normal mt-0.5">
+({hoPropText})
+</div>
+)}
+</div>
+​<div className="text-[8.5px] sm:text-[10px] font-bold text-gray-500 uppercase mt-1 w-full text-center leading-normal pb-1">
+{finalHoThoan}
+</div>
+</div>
+​{/* QUẺ BIẾN */}
+<div className="flex flex-col items-center justify-start w-[32%] px-0.5 pb-1">
+<div className="h-[32px] sm:h-[36px] flex items-center justify-center w-full mb-1 px-1">
+<h2 className="text-[10px] sm:text-[11.5px] font-bold text-[#0284c7] uppercase tracking-tight text-center leading-[1.15] break-words">
+{finalBienName}
+</h2>
+</div>
+​{systemType === 'luchao' ? (
+<BlockHexagram lines={finalBienBin} isMovingArray={finalMoving} />
+) : (
+<div className="flex items-center w-full justify-center">
+<div className="flex-1 flex flex-col justify-around h-[38px] sm:h-[42px] text-[7.5px] sm:text-[8.5px] font-bold text-right pr-1.5 sm:pr-2 whitespace-nowrap">
+<div className="leading-[1.1]">
+<span className={uppercase ${getRoleColor(bienUpperRole)}}>{bienUpperRole}</span>
+</div>
+<div className="leading-[1.1]">
+<span className={uppercase ${getRoleColor(bienLowerRole)}}>{bienLowerRole}</span>
+</div>
+</div>
+<BlockHexagram lines={finalBienBin} isMovingArray={finalMoving} className="w-[30px] sm:w-[36px] space-y-[2px] sm:space-y-[2.5px] flex-none mx-auto" />
+<div className="flex-1 flex flex-col justify-around h-[38px] sm:h-[42px] text-[7.5px] sm:text-[8.5px] font-bold text-left pl-1.5 sm:pl-2 whitespace-nowrap">
+<div className="leading-[1.1]">
+<span className={uppercase ${getElementColor(bienUpperInfo.element)}}>{bienUpperInfo.name}</span>
+
+<span className={text-[6.5px] sm:text-[7.5px] ${getElementColor(bienUpperInfo.element)}}>{bienUpperInfo.element}</span>
+</div>
+<div className="leading-[1.1]">
+<span className={uppercase ${getElementColor(bienLowerInfo.element)}}>{bienLowerInfo.name}</span>
+
+<span className={text-[6.5px] sm:text-[7.5px] ${getElementColor(bienLowerInfo.element)}}>{bienLowerInfo.element}</span>
+</div>
+</div>
+</div>
+)}
+​<div className="mt-1.5 w-full text-center">
+<div className={text-[8.5px] sm:text-[10px] uppercase font-bold leading-normal ${getElementColor(CUNG_ELEMENTS[finalBienCung])}}>
+HỌ {finalBienCung}
+</div>
+{bienPropText && (
+<div className="text-[#0284c7] font-semibold text-[7.5px] sm:text-[8.5px] leading-normal mt-0.5">
+({bienPropText})
+</div>
+)}
+</div>
+​<div className="text-[8.5px] sm:text-[10px] font-bold text-[#0284c7] uppercase mt-1 w-full text-center leading-normal pb-1">
+{finalBienThoan}
+</div>
+</div>
+</div>
+​{systemType === 'luchao' && (
+<>
+<table className="w-full dense-table text-[9px] sm:text-[10px] border-collapse bg-white mb-1.5 mt-0.5 shadow-sm">
+<thead>
+<tr className="bg-[#f0e6ce]">
+<th className="w-[6%] text-[#6b4c1a]">Hào</th>
+<th className="w-[5%] text-[#6b4c1a]">T/Ứ</th>
+<th className="w-[12%] text-[#6b4c1a]">Lục Thần</th>
+<th className="w-[13%] text-[#6b4c1a]">Can Chi</th>
+<th className="w-[11%] text-[#6b4c1a]">P.Thần</th>
+<th className="w-[5%] text-[#6b4c1a]">T.K</th>
+<th className="w-[12%] text-[#0284c7]">Lục Thần</th>
+<th className="w-[13%] text-[#0284c7]">Can Chi</th>
+<th className="w-[12%] text-[#6b4c1a]">Lục Thú</th>
+<th className="w-[5%] text-[#6b4c1a]">T.K</th>
+<th className="w-[6%] text-[#6b4c1a]">Hào</th>
+</tr>
+</thead>
+<tbody>
+{chuLines.slice().reverse().map((line, revIdx) => {
+const idx = 5 - revIdx;
+const isMoving = finalMoving[idx];
+​let t_u_Label = "";
+const isThe = (chuTheHao === idx + 1);
+const isUng = (chuUngHao === idx + 1);
+if (isThe) t_u_Label = "Thế";
+if (isUng) t_u_Label = "Ứng";
+​const bLine = bienLines[idx] || line;
+const pf = mapPhuc[idx];
+​const tkChu = layThandSatTKhong(dayCan, dayChi, line.chi);
+const tkBien = isMoving ? layThandSatTKhong(dayCan, dayChi, bLine.chi) : "-";
+​return (
+<tr key={idx} className={isMoving ? "hao-dong-highlight bg-[#fff5f5]" : ""}>
+<td><TableLineSymbol binary={line.binary} isMoving={isMoving} /></td>
+<td className={font-bold ${t_u_Label === 'Thế' ? 'text-blue-700' : 'text-gray-500'}}>{t_u_Label}</td>
+<td className={font-bold ${isMoving ? 'text-[#b91c1c]' : 'text-gray-800'}}>{line.lucThan || "-"}</td>
+​<td className="font-bold">
+<span className={getElementColor(CAN_NGU_HANH[line.can])}>{line.can}</span>{' '}
+<span className={getElementColor(line.element)}>{line.chi}</span>
+</td>
+​<td className="leading-tight">
+{pf ? (
+<div className="flex flex-col items-center justify-center">
+<span className="text-gray-500 font-bold text-[7px] sm:text-[8px]">{pf.lucThan.split(' ')[0]}</span>
+<span className="font-bold">
+<span className={getElementColor(CAN_NGU_HANH[pf.can])}>{pf.can}</span>{' '}
+<span className={getElementColor(pf.element)}>{pf.chi}</span>
+</span>
+</div>
+) : "-"}
+</td>
+​<td className="text-red-600 font-bold text-[8px] sm:text-[9px]">{tkChu}</td>
+​<td className={font-bold ${isMoving ? 'text-[#0284c7]' : 'text-gray-300'}}>{isMoving ? bLine.lucThan : "-"}</td>
+<td className={font-bold ${isMoving ? '' : 'text-gray-300'}}>
+{isMoving ? (
+<>
+<span className={getElementColor(CAN_NGU_HANH[bLine.can])}>{bLine.can}</span>{' '}
+<span className={getElementColor(bLine.element)}>{bLine.chi}</span>
+</>
+) : "-"}
+</td>
+​<td className={font-bold ${getLucThuColor(lucThuLineList[idx])}}>{lucThuLineList[idx]}</td>
+<td className="text-red-600 font-bold text-[8px] sm:text-[9px]">{tkBien}</td>
+<td><TableLineSymbol binary={bLine.binary} isMoving={false} /></td>
+</tr>
+);
+})}
+</tbody>
+</table>
+​<table className="w-full dense-table text-[9px] sm:text-[10px] border-collapse bg-white mb-2 shadow-sm">
+<thead>
+<tr className="bg-[#f0e6ce]">
+<th className="w-[14%] text-[#8b4513]">Hào (Chủ)</th>
+<th className="w-[14%] text-[#8b4513]">V-S (Tháng)</th>
+<th className="w-[14%] text-[#8b4513]">Q.Thần</th>
+<th className="w-[14%] text-[#8b4513]">T.S - Ngày</th>
+<th className="w-[16%] text-[#8b4513]">T.S - Tháng</th>
+​<th className="w-[14%] text-[#0284c7]">Hào (Biến)</th>
+<th className="w-[13%] text-[#0284c7]">V-S Biến</th>
+<th className="w-[14%] text-[#0284c7]">T.S - Ngày</th>
+<th className="w-[15%] text-[#0284c7]">T.S - Tháng</th>
+</tr>
+</thead>
+<tbody>
+{chuLines.slice().reverse().map((line, revIdx) => {
+const idx = 5 - revIdx;
+const isMoving = finalMoving[idx];
+const bLine = bienLines[idx] || line;
+​const vsMonth = checkVuongSuy(line.element, monthChi);
+const tsDay = TR_SINH_MAP[line.element][dayChi];
+const tsMonth = TR_SINH_MAP[line.element][monthChi];
+​const vsMonthB = isMoving ? checkVuongSuy(bLine.element, monthChi) : "-";
+const tsDayB = isMoving ? TR_SINH_MAP[bLine.element][dayChi] : "-";
+const tsMonthB = isMoving ? TR_SINH_MAP[bLine.element][monthChi] : "-";
+​return (
+<tr key={idx} className={isMoving ? "hao-dong-highlight bg-[#fff5f5]" : ""}>
+<td className="font-bold whitespace-nowrap">
+<span className={getElementColor(CAN_NGU_HANH[line.can])}>{line.can}</span>{' '}
+<span className={getElementColor(line.element)}>{line.chi}</span>
+</td>
+<td className={getVuongSuyColor(vsMonth)}>{vsMonth}</td>
+<td className="text-gray-400 font-medium">-</td>
+<td className={getTruongSinhColor(tsDay)}>{tsDay}</td>
+<td className={getTruongSinhColor(tsMonth)}>{tsMonth}</td>
+​<td className={font-bold whitespace-nowrap ${isMoving ? '' : 'text-gray-300'}}>
+{isMoving ? (
+<>
+<span className={getElementColor(CAN_NGU_HANH[bLine.can])}>{bLine.can}</span>{' '}
+<span className={getElementColor(bLine.element)}>{bLine.chi}</span>
+</>
+) : "-"}
+</td>
+<td className={isMoving ? getVuongSuyColor(vsMonthB) : 'text-gray-300'}>{isMoving ? vsMonthB : "-"}</td>
+<td className={isMoving ? getTruongSinhColor(tsDayB) : 'text-gray-300'}>{isMoving ? tsDayB : "-"}</td>
+<td className={isMoving ? getTruongSinhColor(tsMonthB) : 'text-gray-300'}>{isMoving ? tsMonthB : "-"}</td>
+</tr>
+);
+})}
+</tbody>
+</table>
+</>
+)}
+​{/* HÀO TỪ KINHDỊCH ĐẦY ĐỦ 6 HÀO CHUẨN XÁC NẰM DƯỚI CÙNG LÁ QUẺ */}
+<div className="w-full text-left document-text py-2 sm:py-3 border-t border-[#d4af37] px-2 sm:px-3 bg-[#fffef9] shadow-sm rounded-sm mb-2 mt-1">
+<h3 className="font-bold text-[12px] sm:text-[13.5px] text-[#b91c1c] mb-2 flex items-center justify-between border-b border-amber-200 pb-1">
+<span className="flex items-center gap-1.5"><i className="fa-solid fa-scroll text-amber-600"></i> HÀO TỪ KINHDỊCH (ĐẦY ĐỦ 6 HÀO)</span>
+<span className="text-[10px] text-gray-500 font-sans">Quẻ {finalChuName}</span>
+</h3>
+​<div className="space-y-2">
+{haoTuFull.map((hao, idx) => {
+const isMov = finalMoving[idx];
+return (
+<div key={idx} className={p-2 rounded border transition-all ${isMov ? 'bg-red-50/80 border-red-300 shadow-sm' : 'bg-amber-50/30 border-amber-100'}}>
+<div className="font-bold text-[#8b4513] text-[11px] sm:text-[12px] flex items-center gap-2">
+<span className={px-1.5 py-0.5 rounded text-[9.5px] font-sans ${isMov ? 'bg-[#dc2626] text-white font-bold' : 'bg-gray-200 text-gray-700'}}>
+Hào {idx + 1} {isMov ? 'ĐỘNG' : ''}
+</span>
+<span className="text-gray-900 font-bold">{hao.name}:</span>
+<span className="font-serif font-normal text-gray-900 text-[12.5px] sm:text-[13.5px]">{hao.han}</span>
+</div>
+<div className="text-[10.5px] sm:text-[11.5px] text-gray-700 italic font-medium mt-0.5 pl-2 border-l-2 border-amber-400">
+{hao.vi}
+</div>
+<div className="text-[10.5px] sm:text-[11.5px] text-gray-900 mt-0.5 pl-2 leading-relaxed">
+<strong className="text-[#8b4513] font-sans">Dịch: </strong>{hao.dich}
+</div>
+</div>
+);
+})}
+</div>
+</div>
+​{/* FOOTER */}
+<div className="mt-2 pt-3 border-t border-[#d4af37] flex justify-center items-center pb-2">
+<div className="flex gap-8 sm:gap-16 text-[9.5px] sm:text-[11px] font-bold document-text">
+<p className="flex items-center gap-1.5 text-gray-800">
+<i className="fa-brands fa-facebook text-[#1877F2] text-[14px]"></i>
+<span>FB: Lê Hữu Hải</span>
+</p>
+<p className="flex items-center gap-1.5 text-gray-800">
+<i className="fa-solid fa-square-phone text-[#25D366] text-[14px]"></i>
+<span>Zalo: 0982076615</span>
+</p>
+</div>
+</div>
+​</div>
+</div>
+</div>
+)}
+</div>
+);
+};
+​const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<MainApp />);
+</script>
+</body>
+</html>
